@@ -22,7 +22,7 @@ def track():
     args = [
         b"track",
         b"-i", b"input.dat", 
-        b"-f", b"y"
+        b"-f", b"year"
     ]
 
     argc = len(args)
