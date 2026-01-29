@@ -17,16 +17,18 @@ lib.track_main.argtypes = [
 lib.track_main.restype = ctypes.c_int
 
 
-def run_track(input_file: str, extension: str, namelist_file: str = None):
-    """
-    Simple wrapper for track_main.
-    """
-    args = [b"track", input_file.encode(), b"-f", extension.encode()]
-
-    if namelist_file:
-        args.append(namelist_file.encode())
+def track():
+    
+    args = [
+        b"track",
+        b"-i", b"input.dat", 
+        b"-f", b"y"
+    ]
 
     argc = len(args)
     argv = (ctypes.c_char_p * argc)(*args)
 
-    return lib.track_main(argc, argv)
+    for i, a in enumerate(args):
+        print(f" argv[{i}] =", a)
+
+    lib.track_main(argc, argv)
