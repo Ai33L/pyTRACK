@@ -41,5 +41,7 @@ jobs:
 
       # 6. Run pytest on test folder
       - name: Run tests
+        working-directory: ${{ github.workspace }}
         run: |
           pytest -v tests
+
