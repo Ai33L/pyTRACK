@@ -1,0 +1,2 @@
+include src/TRACK-1.5.2.tar.bz2
+recursive-include pyTRACK/data *
