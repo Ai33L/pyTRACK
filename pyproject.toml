@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=65.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyTRACK"
+version = "0.1.0"
+description = "Python wrapper for the TRACK tracking system"
+authors = [
+    { name="Your Name", email="you@example.com" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["pyTRACK"]
