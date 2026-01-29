@@ -12,36 +12,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Set up Python
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      # 3. Install system dependencies (required for TRACK)
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y gfortran gcc libnetcdf-dev build-essential
 
-      # 4. Upgrade pip, install build tools
-      - name: Install Python build tools
+      - name: Upgrade pip and install build tools
         run: |
           python -m pip install --upgrade pip
           pip install setuptools wheel pytest
 
-      # 5. Build and install your package in editable mode
-      - name: Build and install pyTRACK
-        run: |
-          pip install -e .
+      - name: Install pyTRACK in editable mode
+        run: pip install -e .
 
-      # 6. Run pytest on test folder
       - name: Run tests
         working-directory: ${{ github.workspace }}
-        run: |
-          pytest -v tests
-
+        run: pytest -v tests
