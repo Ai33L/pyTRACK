@@ -42,4 +42,4 @@ jobs:
       # 6. Run pytest on test folder
       - name: Run tests
         run: |
-          pytest -v test
+          pytest -v tests
