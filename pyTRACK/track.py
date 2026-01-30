@@ -19,7 +19,7 @@ lib.track_main.restype = ctypes.c_int
 
 def track():
     # Compute absolute path to grid.nc in the data folder
-    input_file = os.path.join(os.path.dirname(__file__), "data", "gridT63.nc")
+    input_file = os.path.dirname(__file__)
     if not os.path.exists(input_file):
         raise FileNotFoundError(f"Input file not found: {input_file}")
 
@@ -33,7 +33,7 @@ def track():
     argc = len(args)
     argv = (ctypes.c_char_p * argc)(*args)
 
-    for i, a in enumerate(args):
-        print(f" argv[{i}] =", a)
+    # for i, a in enumerate(args):
+    #     print(f" argv[{i}] =", a)
 
     lib.track_main(argc, argv)
