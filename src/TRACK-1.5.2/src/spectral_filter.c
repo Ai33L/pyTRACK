@@ -10,6 +10,8 @@
 #include "pp.h"
 #include "utf.h"
 #include "netcdf_info.h"
+#include <unistd.h>
+#include <limits.h>
 
 #define  NCHRB  30
 
@@ -38,7 +40,11 @@ extern int form;
 void spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 
 {
-
+   /*AS*/
+    char cwd[MAXCHR];
+    char SPECTRAL[MAXCHR];
+    getcwd(cwd, sizeof(cwd));
+    snprintf(SPECTRAL,   MAXCHR, "%s/specfilt", cwd);
 
     int i, j=0, k;
     int gty;
@@ -412,7 +418,7 @@ void spectral_filter(FILE *fdat, int fr1, int fri, int frl)
     filspec = (FILE **)calloc(nband, sizeof(FILE *));
     mem_er((filspec == NULL) ? 0 : 1, nband * sizeof(FILE *));
 
-    printf("If field values are likely to be large, do you wish to restrict\r\n"
+    printf("Spec If field values are likely to be large, do you wish to restrict\r\n"
            "them before filtering, 'y' or 'n'?                             \n\n");
 
     scanf("\n");

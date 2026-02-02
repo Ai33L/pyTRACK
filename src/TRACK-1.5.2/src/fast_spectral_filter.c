@@ -12,6 +12,8 @@
 #include "netcdf_info.h"
 #include "m_values.h"
 #include "geo_values.h"
+#include <unistd.h>
+#include <limits.h>
 
 #define TOLGAUSS   2.0e-3
 #define  NCHRB  30
@@ -54,6 +56,13 @@ extern char *fext;
 
 void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 {
+    /*AS*/
+    char cwd[MAXCHR];
+    char SPECTRAL[MAXCHR];
+    getcwd(cwd, sizeof(cwd));
+    snprintf(SPECTRAL,   MAXCHR, "%s/specfilt", cwd);
+
+
     int i, j, k, n;
     int nf=0, nx=0, nxx=0, nxmax=0, nln=0;
     int ncof=0;
@@ -434,7 +443,6 @@ void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 
 
 /* restrict field values */
-
    printf("If field values are likely to be large, do you wish to restrict\r\n"
            "them before filtering, 'y' or 'n'?                             \n\n");
 
@@ -449,11 +457,10 @@ void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 
    }
 
-
 /* setup arrays for FFT coefficients */
 
-   nxmax = (gr->ix > newg->ix) ? gr->ix : newg->ix;
 
+   nxmax = (gr->ix > newg->ix) ? gr->ix : newg->ix;
 
 #ifdef  FFTLIB
 
@@ -529,9 +536,12 @@ void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 
    for(i=0; i < nband; i++){
        sprintf(band_id, "_band%03d", i);
-       strncpy(filename[i], SPECTRAL, MAXCHR);
-       if(iext) strcpy(strstr(filename[i], EXTENSION), fext);
+       /*strncpy(filename[i], SPECTRAL, MAXCHR);
+       if(iext) snprintf(filename[i], MAXCHR, "%s.%s", filename[i], fext);
+       if(iext) strcpy(strstr(filename[i], EXTENSION), fext);*/
+       snprintf(filename[i], MAXCHR, "%s%s%s%s", SPECTRAL, band_id, (iext ? "." : ""), (iext ? fext : ""));
        strcat(filename[i], band_id);
+       
        
        if(ideriv){
           if(!ivrdv){
@@ -556,8 +566,9 @@ void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 	  }
        
        }
-
+      
        filspec[i] = open_file(filename[i], "w");
+
 
 /* write header */
 
@@ -635,7 +646,6 @@ void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
          }
 
 /* perform FFT */
-
 
 #ifdef  FFTLIB
 

@@ -49,7 +49,7 @@
 
 /* spectraly filtered fields output stub filename        */
 
-#define  SPECTRAL      Add(USER,PATHO,specfil?)
+/*#define  SPECTRAL      Add(USER,PATHO,specfil?)        */
 
 /* spectral response for Lanczos filtering               */
 

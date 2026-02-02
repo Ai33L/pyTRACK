@@ -234,8 +234,9 @@ int track_main(int argc, char **argv)
    }
    /*AS*/
    printf("package path is %s\n", pkgpath);
-   /*snprintf(filnam, MAXCHR, "%s/data/gridT63.nc", pkgpath);* - possibly default to this at the end/
+   /*snprintf(filnam, MAXCHR, "%s/data/gridT63.nc", pkgpath);* - possibly default to this at the end*/
    snprintf(DATCM,   MAXCHR, "%s/data/CMAP.dat.claire", pkgpath); /*using this one for now*/
+
 
    if(!strstr(filnam, "http://")){
 
@@ -367,11 +368,11 @@ int track_main(int argc, char **argv)
 
 /* initialize, data format, grid translation, projection */
 
-   snprintf(FINIT, MAXCHR, "%s/init", cwd);
+   snprintf(initf, MAXCHR, "%s/init%s%s", cwd, (iext ? "." : ""), (iext ? fext : ""));
+   /*snprintf(FINIT, MAXCHR, "%s/init", cwd);
    strncpy(initf, FINIT, MAXCHR);
-
-   /*if(iext) strcpy(strstr(initf, EXTENSION), fext);*/
-   if(iext) snprintf(initf, MAXCHR, "%s.%s", initf, fext);
+   if(iext) strcpy(strstr(initf, EXTENSION), fext);
+   if(iext) snprintf(initf, MAXCHR, "%s.%s", initf, fext);*/
 
    printf("do you want to use an existing initialization, '0' for no, '1' for yes\n");
 

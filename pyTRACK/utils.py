@@ -227,7 +227,7 @@ def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
 
     # generate input file and calculate vorticity using TRACK
     os.system(
-    'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VOR/{out}/" {indat} > {curr}/calcvor_onelev_spec.in'
+    'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VORFILE/{out}/" {indat} > {curr}/calcvor_onelev_spec.in'
     .format(u=u_name, v=v_name, nx=nx, ny=ny, out=outfile, indat=indat, curr=curr))
     track(input_file=uv_file, namelist='/home/requiem/dev/save/calcvor_onelev_spec.in')
     
@@ -320,24 +320,22 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         vor850_name = "vor850y"+year+".dat"
         calc_vorticity(year_file, outfile=vor850_name)
 
-    #     # fname = "T42filt_" + vor850_name + ".dat"
-    #     # line_1 = "sed -e \"s/NX/" + nx + "/;s/NY/" + ny + \
-    #     #     "/;s/TRUNC/42/\" specfilt.in > spec_T42_nx" + nx + "_ny" + ny + ".in"
-    #     # line_2 = "bin/track.linux -i " + vor850_name + " -f y" + year + \
-    #     #             " < spec_T42_nx" + nx + "_ny" + ny + ".in"
-    #     # line_3 = "mv outdat/specfil.y" + year + "_band001 indat/" + fname
-    #     # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
-    #     #     fname + " -f=y" + year + \
-    #     #     " -j=RUN_AT.in -k=initial.T42_" + hemisphere + \
-    #     #     " -n=1,62," + \
-    #     #     str(nchunks) + " -o='" + outdir + \
-    #     #     "' -r=RUN_AT_ -s=RUNDATIN.VOR"
-
-    #     # setting environment variables
-    #     os.environ["CC"] = "gcc"
-    #     os.environ["FC"] = "gfortran"
-    #     os.environ["ARFLAGS"] = ""
-    #     os.environ["PATH"] += ":." 
+        fname = "T42filt_" + vor850_name
+        indat=os.path.join(os.path.dirname(__file__), "indat", "specfilt.in")
+        os.system(
+        'sed -e "s/NX/{nx}/;s/NY/{ny}/;s/TRUNC/42/" {indat} > spec_T42_nx{nx}_ny{ny}.in'
+        .format(nx=nx, ny=ny, indat=indat)
+        )
+        track(input_file=vor850_name, namelist='/home/requiem/dev/save/'+"spec_T42_nx" + nx + "_ny" + ny + ".in")
+        os.system("mv "+ outdir+"/specfilt_band001.year_band001 " + fname)
+        
+        
+        # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
+        #     fname + " -f=y" + year + \
+        #     " -j=RUN_AT.in -k=initial.T42_" + hemisphere + \
+        #     " -n=1,62," + \
+        #     str(nchunks) + " -o='" + outdir + \
+        #     "' -r=RUN_AT_ -s=RUNDATIN.VOR"
 
     #     # executing the lines to run TRACK
     #     print("Spectral filtering...")
