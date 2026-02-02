@@ -9,4 +9,4 @@ def test_track_function_loads():
     assert os.path.exists(lib_path), f"{lib_path} not found"
 
     lib = ctypes.CDLL(lib_path)
-    assert hasattr(lib, "track"), "track() function not found"
+    assert hasattr(lib, "track_main"), "track_main() function not found"
