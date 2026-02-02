@@ -1,40 +1,60 @@
-import os
-import ctypes
+def track(input_file="input.nc", namelist=None):
+    """
+    Run TRACK.
 
-# Path to shared library
-_LIB = os.path.join(os.path.dirname(__file__), "_lib", "libtrack.so")
+    Parameters
+    ----------
+    input_file : str
+        Name of the input file (passed with -i).
+    namelist : str or None
+        Path to the namelist file to feed to stdin.
+        If None, runs TRACK normally without stdin redirection.
+    """
 
-if not os.path.exists(_LIB):
-    raise FileNotFoundError(f"libtrack.so not found at {_LIB}")
+    import os
+    import ctypes
 
-lib = ctypes.CDLL(_LIB)
+    # Path to shared library
+    _LIB = os.path.join(os.path.dirname(__file__), "_lib", "libtrack.so")
 
-# Define function signature
-lib.track_main.argtypes = [
-    ctypes.c_int,
-    ctypes.POINTER(ctypes.c_char_p)
-]
-lib.track_main.restype = ctypes.c_int
+    if not os.path.exists(_LIB):
+        raise FileNotFoundError(f"libtrack.so not found at {_LIB}")
 
+    lib = ctypes.CDLL(_LIB)
 
-def track(input_file='input.nc'):
-    # Compute absolute path to grid.nc in the data folder
+    # Define function signature
+    lib.track_main.argtypes = [
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_char_p)
+    ]
+    lib.track_main.restype = ctypes.c_int
+
     pkgpath = os.path.dirname(__file__)
-    if not os.path.exists(pkgpath):
-        raise FileNotFoundError(f"Input file not found: {pkgpath}")
 
-    # Prepare arguments
     args = [
         b"track",
         b"-d", pkgpath.encode("utf-8"),
-        b"-i", input_file.encode("utf-8"),  # convert to bytes for ctypes
-        b"-f", b"year"   
+        b"-i", input_file.encode("utf-8"),
+        b"-f", b"year",
     ]
 
     argc = len(args)
     argv = (ctypes.c_char_p * argc)(*args)
 
-    # for i, a in enumerate(args):
-    #     print(f" argv[{i}] =", a)
+    if namelist is not None:
+        # If a namelist is provided, redirect stdin
+        if not os.path.exists(namelist):
+            raise FileNotFoundError(f"Namelist not found: {namelist}")
 
-    lib.track_main(argc, argv)
+        import os
+        old_stdin_fd = os.dup(0)
+        try:
+            with open(namelist, "rb") as f:
+                os.dup2(f.fileno(), 0)  # redirect stdin
+                lib.track_main(argc, argv)
+        finally:
+            os.dup2(old_stdin_fd, 0)  # restore stdin
+            os.close(old_stdin_fd)
+    else:
+        # No namelist, call normally
+        lib.track_main(argc, argv)
