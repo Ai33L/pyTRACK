@@ -229,100 +229,62 @@ def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
     os.system(
     'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VOR/{out}/" {indat} > {curr}/calcvor_onelev_spec.in'
     .format(u=u_name, v=v_name, nx=nx, ny=ny, out=outfile, indat=indat, curr=curr))
-    track(input_file=uv_file)
+    track(input_file=uv_file, namelist='/home/requiem/dev/save/calcvor_onelev_spec.in')
     
 
-def track_uv(infile, outdirectory, infile2='none', NH=True, ysplit=True, shift=False):
+def track_uv(infile, outdirectory, NH=True, ysplit=False):
 
     # set outdir -- full path the output track directory
     outdir = os.path.abspath(os.path.expanduser(outdirectory))
-
-    # check if U and V are in the same file, if not merge them in "input"
-    outfile_uv = "uv_merged.nc"
-    dir_path = os.path.dirname(infile)
-    if infile2 == 'none':
-        os.system("cp " + infile + " " + dir_path+"/uv_merged.nc")
-    else: # if U and V separate, merge into UV file
-        outfile_uv = merge_uv(infile, infile2, outfile_uv,'ua','va')
-    input = os.path.join(dir_path, os.path.basename(outfile_uv))
-    
-    print("input file for wind is: ", input)
-    input_basename = os.path.basename(input)
+    print(outdir)
 
     # read data charactheristics
-    data = data_indat(input,'cmip6')
+    data = data_indat(infile,'cmip6')
     gridtype = data.get_grid_type()
     if ("va" not in data.vars) or ("ua" not in data.vars):
         raise Exception("Invalid input variable type. Please input eithe " +
                             "a combined uv file or both ua and va")
-
-
-    print("Starting preprocessing.")
     
     print("Remove unnecessary variables.")
     
-    input_e = input[:-3] + "_extr.nc"
+    infile_e = infile[:-3] + "_processed.nc"
     if "time_bnds" in data.vars:
         ncks = "time_bnds"
         if "lat_bnds" in data.vars:
             ncks += ",lat_bnds,lon_bnds"
-        os.system("ncks -C -O -x -v " + ncks + " " + input + " " + input_e)
+        os.system("ncks -C -O -x -v " + ncks + " " + input + " " + infile_e)
     elif "lat_bnds" in data.vars:
-        os.system("ncks -C -O -x -v lat_bnds,lon_bnds " + input + " " + input_e)
+        os.system("ncks -C -O -x -v lat_bnds,lon_bnds " + input + " " + infile_e)
     else:
-        os.system("mv " + input + " " + input_e)
-    os.system("rm " + dir_path+"/uv_merged.nc")
+        os.system("cp " + infile + " " + infile_e)
 
     # interpolate, if not gaussian
-    input_eg = input_e[:-3] + "_gaussian.nc"
+    infile_eg = infile_e[:-3] + "_gaussian.nc"
     if gridtype == 'gridtype  = gaussian':
         print("No regridding needed.")
-        os.system("mv " + input_e + " " + input_eg)
     else:
     # regrid
-        regrid_cmip6(input_e, input_eg)
-    os.system("rm " + dir_path+"/uv_merged_extr.nc")
+        regrid_cmip6(infile_e, infile_eg)
+    os.system("mv " + infile_eg + " " + infile_e)
 
     # fill missing values, modified to be xarray for now - ASh
-    input_egf = input_eg[:-3] + "_filled.nc"
+    infile_egf = infile_e[:-3] + "_filled.nc"
 
-    os.system("cdo setmisstoc,0 " + input_eg +
-              " " + input_egf)
+    os.system("cdo setmisstoc,0 " + infile_e +
+              " " + infile_egf)
     
-    os.system("ncatted -a _FillValue,,d,, -a missing_value,,d,, " + input_egf)
+    os.system("ncatted -a _FillValue,,d,, -a missing_value,,d,, " + infile_egf)
+    os.system("mv " + infile_egf + " " + infile_e)
     
-        
-    # print("Filled missing values, if any.")
-    os.system("rm " + dir_path+"/uv_merged_extr_gaussian.nc")
-    
-    #### Files created so far - 
-    # uv_merged.nc -- removed
-    # uv_merged_extr.nc -- removed
-    # uv_merged_extr_gaussian.nc -- removed
-    # uv_merged_extr_gaussian_filled.nc --removed
-
-    # renaming final uv file and cleaning up
-
-    input_final = dir_path+"/uv_final.nc"
-    os.system("mv " + input_egf + " " + input_final)
     
     # get final data info
-    data = cmip6_indat(input_final)
+    data = cmip6_indat(infile_e)
     nx, ny = data.get_nx_ny()
 
-    #return
     ################## END OF PROCESSING ####################################################################
-    
-    # Link data to TRACK directory
-    print('Linking data to TRACK/indat')
-    os.system("ln -fs '" + input_final + "' " + str(Path.home()) + "/TRACK/indat/uv_processed.nc")
-
-    # change working directory
-    cwd = os.getcwd()
-    os.chdir(str(Path.home()) + "/TRACK")
 
     # Years
-    years = cdo.showyear(input=input_final)[0].split()
+    years = cdo.showyear(input=infile_e)[0].split()
     print("Years: ", years)
 
     if not ysplit:
@@ -334,7 +296,6 @@ def track_uv(infile, outdirectory, infile2='none', NH=True, ysplit=True, shift=F
         hemisphere = "SH"
 
     # do tracking for one year at a time
-    input_basename="uv_processed.nc"
     
     for year in years:
         print("Running TRACK for year: " + year + "...")
@@ -342,94 +303,94 @@ def track_uv(infile, outdirectory, infile2='none', NH=True, ysplit=True, shift=F
         # select year from data
         if ysplit:
             print("Splitting: " + year)
-            year_file = input_basename[:-3] + "_" + year + ".nc"
-            cdo.selyear(year, input="indat/"+input_basename, output="indat/"+year_file)
+            year_file = infile_e[:-3] + "_" + year + ".nc"
+            cdo.selyear(year, input=infile_e, output=year_file)
         else:
-            year_file=input_basename
+            year_file=infile_e
 
         # directory containing year specific track output
         c_input = hemisphere + "_" + year 
 
         # get number of timesteps and number of chunks for tracking
-        data = cmip6_indat("indat/"+year_file)
+        data = cmip6_indat(year_file)
         ntime = data.get_timesteps()
         nchunks = ceil(ntime/62)
 
         # calculate vorticity from UV
         vor850_name = "vor850y"+year+".dat"
-        calc_vorticity("indat/"+year_file, vor850_name, copy_file=False)
+        calc_vorticity(year_file, outfile=vor850_name)
 
-        # fname = "T42filt_" + vor850_name + ".dat"
-        # line_1 = "sed -e \"s/NX/" + nx + "/;s/NY/" + ny + \
-        #     "/;s/TRUNC/42/\" specfilt.in > spec_T42_nx" + nx + "_ny" + ny + ".in"
-        # line_2 = "bin/track.linux -i " + vor850_name + " -f y" + year + \
-        #             " < spec_T42_nx" + nx + "_ny" + ny + ".in"
-        # line_3 = "mv outdat/specfil.y" + year + "_band001 indat/" + fname
-        # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
-        #     fname + " -f=y" + year + \
-        #     " -j=RUN_AT.in -k=initial.T42_" + hemisphere + \
-        #     " -n=1,62," + \
-        #     str(nchunks) + " -o='" + outdir + \
-        #     "' -r=RUN_AT_ -s=RUNDATIN.VOR"
+    #     # fname = "T42filt_" + vor850_name + ".dat"
+    #     # line_1 = "sed -e \"s/NX/" + nx + "/;s/NY/" + ny + \
+    #     #     "/;s/TRUNC/42/\" specfilt.in > spec_T42_nx" + nx + "_ny" + ny + ".in"
+    #     # line_2 = "bin/track.linux -i " + vor850_name + " -f y" + year + \
+    #     #             " < spec_T42_nx" + nx + "_ny" + ny + ".in"
+    #     # line_3 = "mv outdat/specfil.y" + year + "_band001 indat/" + fname
+    #     # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
+    #     #     fname + " -f=y" + year + \
+    #     #     " -j=RUN_AT.in -k=initial.T42_" + hemisphere + \
+    #     #     " -n=1,62," + \
+    #     #     str(nchunks) + " -o='" + outdir + \
+    #     #     "' -r=RUN_AT_ -s=RUNDATIN.VOR"
 
-        # setting environment variables
-        os.environ["CC"] = "gcc"
-        os.environ["FC"] = "gfortran"
-        os.environ["ARFLAGS"] = ""
-        os.environ["PATH"] += ":." 
+    #     # setting environment variables
+    #     os.environ["CC"] = "gcc"
+    #     os.environ["FC"] = "gfortran"
+    #     os.environ["ARFLAGS"] = ""
+    #     os.environ["PATH"] += ":." 
 
-        # executing the lines to run TRACK
-        print("Spectral filtering...")
-        # os.system(line_1)
-        # os.system(line_2)
-        # os.system(line_3)
+    #     # executing the lines to run TRACK
+    #     print("Spectral filtering...")
+    #     # os.system(line_1)
+    #     # os.system(line_2)
+    #     # os.system(line_3)
 
-        # print("Running TRACK...")
-        # os.system(line_4)
+    #     # print("Running TRACK...")
+    #     # os.system(line_4)
 
-        print("Turning track output to netCDF...")
+    #     print("Turning track output to netCDF...")
 
-        ### extract start date and time from data file
-        filename="indat/"+year_file
-        sdate = subprocess.check_output(f"cdo showdate {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
-        sdate = sdate.decode('utf-8').strip()
-        stime1 = subprocess.check_output(f"cdo showtime {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
-        stime1 = stime1.decode('utf-8').strip()
+    #     ### extract start date and time from data file
+    #     filename="indat/"+year_file
+    #     sdate = subprocess.check_output(f"cdo showdate {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
+    #     sdate = sdate.decode('utf-8').strip()
+    #     stime1 = subprocess.check_output(f"cdo showtime {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
+    #     stime1 = stime1.decode('utf-8').strip()
         
-        # hotfix for start year before 1979
-        if sdate[0]=='0':
-            sdate='2'+sdate[1:]
+    #     # hotfix for start year before 1979
+    #     if sdate[0]=='0':
+    #         sdate='2'+sdate[1:]
         
-        # convert initial date to string for util/count, in format YYYYMMDDHH
-        timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
-        datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
-        timedelta=6
+    #     # convert initial date to string for util/count, in format YYYYMMDDHH
+    #     timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
+    #     datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
+    #     timedelta=6
 
-        if shift:
-            sdate=str(int(sdate[0:4])-1)+'-11-'+sdate[8:10]
-            print('shifted start date :', sdate)
-            timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
-            datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
+    #     if shift:
+    #         sdate=str(int(sdate[0:4])-1)+'-11-'+sdate[8:10]
+    #         print('shifted start date :', sdate)
+    #         timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
+    #         datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
 
-        # tr2nc - turn tracks into netCDF files
-        os.system("gunzip '" + outdir + "'/" + c_input + "/ff_trs_*")
-        os.system("gunzip '" + outdir + "'/" + c_input + "/tr_trs_*")
-        tr2nc_vor(outdir + "/" + c_input + "/ff_trs_pos", timestring, datetime, timedelta)
-        tr2nc_vor(outdir + "/" + c_input + "/ff_trs_neg", timestring, datetime, timedelta)
-        tr2nc_vor(outdir + "/" + c_input + "/tr_trs_pos", timestring, datetime, timedelta)
-        tr2nc_vor(outdir + "/" + c_input + "/tr_trs_neg", timestring, datetime, timedelta)
+    #     # tr2nc - turn tracks into netCDF files
+    #     os.system("gunzip '" + outdir + "'/" + c_input + "/ff_trs_*")
+    #     os.system("gunzip '" + outdir + "'/" + c_input + "/tr_trs_*")
+    #     tr2nc_vor(outdir + "/" + c_input + "/ff_trs_pos", timestring, datetime, timedelta)
+    #     tr2nc_vor(outdir + "/" + c_input + "/ff_trs_neg", timestring, datetime, timedelta)
+    #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_pos", timestring, datetime, timedelta)
+    #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_neg", timestring, datetime, timedelta)
 
-        ### cleanup fortran files ###########################
+    #     ### cleanup fortran files ###########################
 
-        if True: ## Change to false to keep files for debugging
-            os.system("rm outdat/specfil*")
-            os.system("rm outdat/ff_trs*")
-            os.system("rm outdat/tr_trs*")
-            os.system("rm outdat/interp_*")
-            os.system("rm indat/"+year_file)
-            os.system("rm indat/"+fname)
-            os.system("rm indat/"+vor850_name)
-        # os.system("rm indat/calcvor_onelev_" + ext + ".in")
+    #     if True: ## Change to false to keep files for debugging
+    #         os.system("rm outdat/specfil*")
+    #         os.system("rm outdat/ff_trs*")
+    #         os.system("rm outdat/tr_trs*")
+    #         os.system("rm outdat/interp_*")
+    #         os.system("rm indat/"+year_file)
+    #         os.system("rm indat/"+fname)
+    #         os.system("rm indat/"+vor850_name)
+    #     # os.system("rm indat/calcvor_onelev_" + ext + ".in")
     
     return
 
