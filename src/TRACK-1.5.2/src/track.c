@@ -355,10 +355,9 @@ int track_main(int argc, char **argv)
 
    snprintf(FINIT, MAXCHR, "%s/init", cwd);
    strncpy(initf, FINIT, MAXCHR);
-   printf(initf);
-   printf(EXTENSION);
-   printf(fext);
-   if(iext) strcpy(strstr(initf, EXTENSION), fext);
+
+   /*if(iext) strcpy(strstr(initf, EXTENSION), fext);*/
+   if(iext) snprintf(initf, MAXCHR, "%s.%s", initf, fext);
 
    printf("do you want to use an existing initialization, '0' for no, '1' for yes\n");
 
