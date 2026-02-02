@@ -10,7 +10,7 @@
 
 /* function to allow command line changes to input file and file extensions */
 
-int parse_com(int argc, char **argv, char *filnam, char *fext, int maxchr, int mext)
+int parse_com(int argc, char **argv, char *pkgpath, char *filnam, char *fext, int maxchr, int mext)
 {
 
     int narg = 1;
@@ -25,7 +25,34 @@ int parse_com(int argc, char **argv, char *filnam, char *fext, int maxchr, int m
 
     while(narg < argc){
 
-         if(!strncmp(argv[narg], "-i", 2)){
+          if(!strncmp(argv[narg], "-d", 2)){
+            strcpy(pkgpath, FPATHI);
+            if(strlen(argv[narg]) == 2) {
+               ++narg;
+               if(!strncmp(argv[narg], "-", 1)){
+                 printf("****ERROR****, incorrect command line input.\n\n");
+                 printf("\n %s\n\n", usage);
+                 exit(1);
+               }
+
+               if(strlen(argv[narg]) > maxchr) {
+                  printf("****ERROR****, command line input to long for character array\n\n");
+                  exit(1);
+               }
+               strcat(pkgpath, argv[narg]);
+
+             }
+             else {
+               if(strlen(argv[narg]) > maxchr) {
+                  printf("****ERROR****, command line input to long for character array\n\n");
+                  exit(1);
+               }
+               strcat(pkgpath, argv[narg]+2);
+             }
+             ++narg;
+         }
+
+         else if(!strncmp(argv[narg], "-i", 2)){
             strcpy(filnam, FPATHI);
             if(strlen(argv[narg]) == 2) {
                ++narg;

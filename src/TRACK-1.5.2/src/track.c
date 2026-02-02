@@ -71,7 +71,7 @@ void spec_filt(FILE *, int , int , int , int );
 
 void convert(FILE * , int , int , int );
 int extract(FILE * );
-int parse_com(int , char ** , char * , char * , int , int );
+int parse_com(int , char ** , char * , char*, char * , int , int );
 void additional_fields(struct tot_tr * , int , off_t , FILE * , int , float );
 void spline_smooth(FILE * );
 void wtm_combine(FILE * );
@@ -220,7 +220,8 @@ int track_main(int argc, char **argv)
 
        fext = (char *)malloc_initl(MAXCHR*sizeof(char));
        mem_er((fext == NULL) ? 0 : 1, MAXCHR*sizeof(char));
-       iext = parse_com(argc, argv, pkgpath, fext, MAXCHR, MEXT);
+       iext = parse_com(argc, argv, pkgpath, filnam, fext, MAXCHR, MEXT);
+       strncpy(filtmp, filnam, MAXCHR);
 
        if(strstr(Add(USER,,), fext)  || 
           strstr(Add(PATHO,,), fext) || 
@@ -233,16 +234,29 @@ int track_main(int argc, char **argv)
    }
    /*AS*/
    printf("package path is %s\n", pkgpath);
-   snprintf(filnam, MAXCHR, "%s/data/gridT63.nc", pkgpath);
+   /*snprintf(filnam, MAXCHR, "%s/data/gridT63.nc", pkgpath);*/
    snprintf(DATCM,   MAXCHR, "%s/data/CMAP.dat.claire", pkgpath); /*using this one for now*/
 
-   strncpy(filtmp, filnam, MAXCHR);
+   if(!strstr(filnam, "http://")){
 
-   if(!fexist(filnam, "r")) {
+      if(!fexist(filnam, "r")){
 
-      printf("***ERROR***, file %s does not exist or does not have the \r\n"
-               "             correct permissions, aborting.         \n\n", filnam);
-      exit(1);
+         printf("***WARNING***, file %s                              \r\n"
+                "               does not exist, input a valid filname\r\n"
+                "               possibly with full path.               \n\n", filnam);
+         scanf("%s", filnam);
+
+         if(!fexist(filnam, "r")) {
+
+            printf("***ERROR***, file %s does not exist or does not have the \r\n"
+                   "             correct permissions, aborting.         \n\n", filnam);
+            exit(1);
+
+         }
+
+         strncpy(filtmp, filnam, MAXCHR);
+
+      }
 
    }
 

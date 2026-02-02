@@ -17,17 +17,18 @@ lib.track_main.argtypes = [
 lib.track_main.restype = ctypes.c_int
 
 
-def track():
+def track(input_file='input.nc'):
     # Compute absolute path to grid.nc in the data folder
-    input_file = os.path.dirname(__file__)
-    if not os.path.exists(input_file):
-        raise FileNotFoundError(f"Input file not found: {input_file}")
+    pkgpath = os.path.dirname(__file__)
+    if not os.path.exists(pkgpath):
+        raise FileNotFoundError(f"Input file not found: {pkgpath}")
 
     # Prepare arguments
     args = [
         b"track",
+        b"-d", pkgpath.encode("utf-8"),
         b"-i", input_file.encode("utf-8"),  # convert to bytes for ctypes
-        b"-f", b"year"
+        b"-f", b"year"   
     ]
 
     argc = len(args)
