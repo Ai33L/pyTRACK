@@ -8,7 +8,11 @@ import xarray as xr
 import shutil
 from .track import track
 
-cdo = Cdo()
+try:
+    cdo = Cdo()
+except Exception as e:
+    cdo = None
+    print("WARNING: CDO not available — CDO-dependent functionality will be disabled.")
 
 __all__ = ['track_uv', 'calc_vorticity']
 
