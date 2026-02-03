@@ -1,5 +1,4 @@
 import os
-from cdo import *
 from netCDF4 import Dataset
 from pathlib import Path
 from math import ceil
@@ -9,6 +8,7 @@ import shutil
 from .track import track
 
 try:
+    from cdo import *
     cdo = Cdo()
 except Exception as e:
     cdo = None
