@@ -7,11 +7,21 @@ name = "pyTRACK"
 version = "0.1.0"
 description = "Python wrapper for the TRACK tracking system"
 authors = [
-    { name="Your Name", email="you@example.com" }
+    { name = "Abel Shibu", email = "abels2000@gmail.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "netCDF4",
+    "xarray" 
+]
 
-[tool.setuptools.packages.find]
-where = ["pyTRACK"]
+[tool.setuptools]
+packages = ["pyTRACK"]
+
+[tool.setuptools.package-data]
+pyTRACK = [
+    "_lib/*.so",
+    "data/**",
+    "indat/**"
+]

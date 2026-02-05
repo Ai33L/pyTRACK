@@ -1,14 +1,15 @@
-import sys
 import os
 import ctypes
+import pytest
 
-# Add project root to sys.path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+def test_track_function_loads():
 
-import pyTRACK
+    import pyTRACK
 
-def test_lib_load():
-    lib_path = os.path.join(os.path.dirname(pyTRACK.__file__), "_lib", "libtrack.so")
-    assert os.path.exists(lib_path), "libtrack.so not found"
+    lib_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "pyTRACK", "_lib", "libtrack.so")
+    )
+    assert os.path.exists(lib_path), f"{lib_path} not found"
+
     lib = ctypes.CDLL(lib_path)
-    assert hasattr(lib, "track_main"), "track_main symbol not found"
+    assert hasattr(lib, "track_main"), "track_main() function not found"

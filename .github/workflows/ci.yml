@@ -11,6 +11,10 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -18,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install system dependencies
         run: |
@@ -37,4 +41,3 @@ jobs:
 
       - name: Run tests
         run: pytest -v tests
-
