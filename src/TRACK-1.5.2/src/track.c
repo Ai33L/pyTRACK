@@ -26,10 +26,6 @@
 
 #include "netcdf_info.h"
 
-/*AS*/
-#include <unistd.h>
-#include <limits.h>
-
 
 #define  PERH    0
 #define  PERV    0
@@ -71,7 +67,7 @@ void spec_filt(FILE *, int , int , int , int );
 
 void convert(FILE * , int , int , int );
 int extract(FILE * );
-int parse_com(int , char ** , char * , char*, char * , int , int );
+int parse_com(int , char ** , char * , char * , int , int );
 void additional_fields(struct tot_tr * , int , off_t , FILE * , int , float );
 void spline_smooth(FILE * );
 void wtm_combine(FILE * );
@@ -174,13 +170,6 @@ int track_main(int argc, char **argv)
    FILE *lwght=NULL;
    FILE *finit_temp=NULL;
 
-   /*AS*/
-   char pkgpath[MAXCHR];
-   char cwd[MAXCHR];
-   getcwd(cwd, sizeof(cwd));
-   printf("Working directory is %s\n", cwd);
-   char FINIT[MAXCHR];
-
    char filnam[MAXCHR];
    char ifil[MAXCHR];
    char filtmp[MAXCHR];
@@ -212,14 +201,14 @@ int track_main(int argc, char **argv)
 
 /* parse command line arguments */
 
-   /*strcpy(filnam, DATIN);
-   strcpy(filtmp, DATIN);*/
+   strcpy(filnam, DATIN);
+   strcpy(filtmp, DATIN);
 
    if(argc > 1) {
 
        fext = (char *)malloc_initl(MAXCHR*sizeof(char));
        mem_er((fext == NULL) ? 0 : 1, MAXCHR*sizeof(char));
-       iext = parse_com(argc, argv, pkgpath, filnam, fext, MAXCHR, MEXT);
+       iext = parse_com(argc, argv, filnam, fext, MAXCHR, MEXT);
        strncpy(filtmp, filnam, MAXCHR);
 
        if(strstr(Add(USER,,), fext)  || 
@@ -231,9 +220,6 @@ int track_main(int argc, char **argv)
        }
 
    }
-   /*AS*/
-   printf("package path is %s\n", DATCM);
-
 
    if(!strstr(filnam, "http://")){
 
@@ -365,11 +351,9 @@ int track_main(int argc, char **argv)
 
 /* initialize, data format, grid translation, projection */
 
-   snprintf(initf, MAXCHR, "%s/init%s%s", cwd, (iext ? "." : ""), (iext ? fext : ""));
-   /*snprintf(FINIT, MAXCHR, "%s/init", cwd);
    strncpy(initf, FINIT, MAXCHR);
-   if(iext) strcpy(strstr(initf, EXTENSION), fext);
-   if(iext) snprintf(initf, MAXCHR, "%s.%s", initf, fext);*/
+   /*if(iext) strcpy(strstr(initf, EXTENSION), fext);*/
+   if(iext) strcat(initf, fext);
 
    printf("do you want to use an existing initialization, '0' for no, '1' for yes\n");
 

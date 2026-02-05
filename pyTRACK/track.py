@@ -4,7 +4,8 @@ def set_track_env():
     pkgpath=os.path.dirname(__file__)
     curr=os.getcwd()
     os.environ["DATCM"] = pkgpath
-    os.environ["SPECTRAL"] = os.path.join(curr, "spectral") 
+    os.environ["SPECTRAL"] = os.path.join(curr, "specfilt") 
+    os.environ["FINIT"] = os.path.join(curr, "month.nc") 
 
 def track(input_file="input.nc", namelist=None):
     """
@@ -41,7 +42,6 @@ def track(input_file="input.nc", namelist=None):
 
     args = [
         b"track",
-        b"-d", pkgpath.encode("utf-8"),
         b"-i", input_file.encode("utf-8"),
         b"-f", b"year",
     ]

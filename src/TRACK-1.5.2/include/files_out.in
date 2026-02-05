@@ -15,7 +15,7 @@
 
 /* initialization file */
 
-/*#define  FINIT         Add(USER,PATHO,initial?)*/
+#define  FINIT         getenv("FINIT")
 
 /* output file for thresholded data                      */
 
