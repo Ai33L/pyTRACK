@@ -18,7 +18,7 @@
 
 #define  FRTIMES Add(USER,PATHI,times?)
 
-/*#define  DATCM   Add(USER,DATPATH,CMAP.dat)   country map data file name */
+#define  DATCM   getenv("DATCM")   /*country map data file name */
 #define  DIMCM   3000               /* dimension of any country map data */
 
 

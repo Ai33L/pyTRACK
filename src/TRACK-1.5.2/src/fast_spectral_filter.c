@@ -12,8 +12,6 @@
 #include "netcdf_info.h"
 #include "m_values.h"
 #include "geo_values.h"
-#include <unistd.h>
-#include <limits.h>
 
 #define TOLGAUSS   2.0e-3
 #define  NCHRB  30
@@ -56,13 +54,7 @@ extern char *fext;
 
 void fast_spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 {
-    /*AS*/
-    char cwd[MAXCHR];
-    char SPECTRAL[MAXCHR];
-    getcwd(cwd, sizeof(cwd));
-    snprintf(SPECTRAL,   MAXCHR, "%s/specfilt", cwd);
-
-
+   
     int i, j, k, n;
     int nf=0, nx=0, nxx=0, nxmax=0, nln=0;
     int ncof=0;

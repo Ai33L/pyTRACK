@@ -10,8 +10,6 @@
 #include "pp.h"
 #include "utf.h"
 #include "netcdf_info.h"
-#include <unistd.h>
-#include <limits.h>
 
 #define  NCHRB  30
 #define BANDLIM 0.1
@@ -60,11 +58,6 @@ extern int form;
 
 void limited_area_filter(FILE *fdat, int fr1, int fri, int frl)
 {
-   /*AS*/
-    char cwd[MAXCHR];
-    char SPECTRAL[MAXCHR];
-    getcwd(cwd, sizeof(cwd));
-    snprintf(SPECTRAL,   MAXCHR, "%s/specfilt", cwd);
 
     int i=0, j=0, k=0;
     int dim=gr->ix * gr->iy;

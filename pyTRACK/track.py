@@ -1,3 +1,11 @@
+def set_track_env():
+    import os
+
+    pkgpath=os.path.dirname(__file__)
+    curr=os.getcwd()
+    os.environ["DATCM"] = pkgpath
+    os.environ["SPECTRAL"] = os.path.join(curr, "spectral") 
+
 def track(input_file="input.nc", namelist=None):
     """
     Run TRACK.
@@ -40,6 +48,8 @@ def track(input_file="input.nc", namelist=None):
 
     argc = len(args)
     argv = (ctypes.c_char_p * argc)(*args)
+
+    set_track_env()
 
     if namelist is not None:
         # If a namelist is provided, redirect stdin

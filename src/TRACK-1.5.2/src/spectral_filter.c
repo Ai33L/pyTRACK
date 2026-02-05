@@ -10,8 +10,6 @@
 #include "pp.h"
 #include "utf.h"
 #include "netcdf_info.h"
-#include <unistd.h>
-#include <limits.h>
 
 #define  NCHRB  30
 
@@ -40,11 +38,6 @@ extern int form;
 void spectral_filter(FILE *fdat, int fr1, int fri, int frl)
 
 {
-   /*AS*/
-    char cwd[MAXCHR];
-    char SPECTRAL[MAXCHR];
-    getcwd(cwd, sizeof(cwd));
-    snprintf(SPECTRAL,   MAXCHR, "%s/specfilt", cwd);
 
     int i, j=0, k;
     int gty;

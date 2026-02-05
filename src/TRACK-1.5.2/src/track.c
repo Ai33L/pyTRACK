@@ -179,7 +179,6 @@ int track_main(int argc, char **argv)
    char cwd[MAXCHR];
    getcwd(cwd, sizeof(cwd));
    printf("Working directory is %s\n", cwd);
-   char DATCM[MAXCHR];
    char FINIT[MAXCHR];
 
    char filnam[MAXCHR];
@@ -233,9 +232,7 @@ int track_main(int argc, char **argv)
 
    }
    /*AS*/
-   printf("package path is %s\n", pkgpath);
-   /*snprintf(filnam, MAXCHR, "%s/data/gridT63.nc", pkgpath);* - possibly default to this at the end*/
-   snprintf(DATCM,   MAXCHR, "%s/data/CMAP.dat.claire", pkgpath); /*using this one for now*/
+   printf("package path is %s\n", DATCM);
 
 
    if(!strstr(filnam, "http://")){

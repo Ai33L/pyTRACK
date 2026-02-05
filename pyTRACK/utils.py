@@ -233,7 +233,7 @@ def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
     os.system(
     'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VORFILE/{out}/" {indat} > {curr}/calcvor_onelev_spec.in'
     .format(u=u_name, v=v_name, nx=nx, ny=ny, out=outfile, indat=indat, curr=curr))
-    track(input_file=uv_file, namelist='/home/requiem/dev/save/calcvor_onelev_spec.in')
+    track(input_file=uv_file, namelist='calcvor_onelev_spec.in')
     
 
 def track_uv(infile, outdirectory, NH=True, ysplit=False):
@@ -330,7 +330,7 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         'sed -e "s/NX/{nx}/;s/NY/{ny}/;s/TRUNC/42/" {indat} > spec_T42_nx{nx}_ny{ny}.in'
         .format(nx=nx, ny=ny, indat=indat)
         )
-        track(input_file=vor850_name, namelist='/home/requiem/dev/save/'+"spec_T42_nx" + nx + "_ny" + ny + ".in")
+        track(input_file=vor850_name, namelist=outdir+"/spec_T42_nx" + nx + "_ny" + ny + ".in")
         os.system("mv "+ outdir+"/specfilt_band001.year_band001 " + fname)
         
         
