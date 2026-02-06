@@ -337,6 +337,8 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         track(input_file=vor850_name, namelist=outdir+"/spec_T42_nx" + nx + "_ny" + ny + ".in")
         os.system("mv "+ outdir+"/specfil_band001.year_band001 " + fname)
         
+
+        print(ntime)
         
         # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
         #     fname + " -f=y" + year + \

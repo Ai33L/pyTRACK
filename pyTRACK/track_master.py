@@ -3,6 +3,7 @@ import shutil
 import subprocess
 from pathlib import Path
 from pyTRACK import track  # your Python track() wrapper
+from math import ceil
 
 # ------------------------------
 # Configuration (replace as needed)
@@ -14,13 +15,13 @@ INITIAL = "/home/requiem/dev/save/initial.T42_NH"
 EXT="666"
 
 ST = 1
-FN = 21
+FN = 62
 BACK = 2
 FOREWARD = 3
 TERMFR = -1
 
 NN = 1
-EE = 12
+EE = ceil(150/FN)
 
 RUNDT = "RUNDATIN.VOR"
 RUNOUT = "RUNDATOUT"
@@ -82,7 +83,6 @@ while N <= E:
     templateB = RDAT / f"{RUNDT}_A.in"
 
     fileA.write_text(replace_namelist(templateA, S, F, INITIAL, first_run))
-    fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run))
 
     # --- Create output directories ---
     max_dir = DIR3 / f"DJF_MAX_{N}"
@@ -92,29 +92,37 @@ while N <= E:
 
     # --- Run TRACK for +ve field ---
     if EXEC_EXIST:
+        print('starting', N, S, F)
         track(input_file=DATIN, namelist=fileA)
     else:
         track(input_file=str(fileA), namelist=None)
 
+
     # Move output files to DJF_MAX
-    for fname in [f"{RUNDT}", "objout.new", "tdump", "idump"]:
-        src = ODAT / (fname if fname != RUNDT else f"{RUNDT}")
-        dst = max_dir / fname
-        if src.exists():
-            shutil.move(str(src), str(dst))
+    print('moving', N)
+    file_list = [RUNDT, "objout.new", "objout", "tdump", "idump"]
+    for fname in file_list:
+        for src_file in ODAT.glob(f"{fname}*"):
+            dst_file = max_dir / fname
+            print(f"Moving {src_file} -> {dst_file}")
+            shutil.move(str(src_file), str(dst_file))
     
+    fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run))
     # --- Run TRACK for -ve field ---
     if EXEC_EXIST:
+        print('starting - ', N)
         track(input_file=DATIN, namelist=fileB)
     else:
         track(input_file=str(fileB), namelist=None)
 
     # Move output files to DJF_MIN
-    for fname in [f"{RUNDT}", "objout.new", "tdump", "idump"]:
-        src = ODAT / (fname if fname != RUNDT else f"{RUNDT}")
-        dst = min_dir / fname
-        if src.exists():
-            shutil.move(str(src), str(dst))
+    print('moving - ', N)
+    file_list = [RUNDT, "objout.new", "objout", "tdump", "idump"]
+    for fname in file_list:
+        for src_file in ODAT.glob(f"{fname}*"):
+            dst_file = min_dir / fname
+            print(f"Moving {src_file} -> {dst_file}")
+            shutil.move(str(src_file), str(dst_file))
 
     # --- Prepare splice files ---
     splice_max = ODAT / f"splice_max.{EXT}"
@@ -139,6 +147,8 @@ while N <= E:
         E = N
         QQ = 1
 
+print('part 1 success!!')
+
 # ------------------------------
 # Splice mode
 # ------------------------------
@@ -157,7 +167,7 @@ def run_splice(splice_file, out_prefix):
 
     # Replace initial and end frame
     text = temp_file.read_text()
-    text = text.replace("initial", str(DIR3 / "initial"))
+    text = text.replace("initial", str(DIR3 / "initialyear"))
     text = text.replace("!", str(E))
     RSPLICE.write_text(text)
     temp_file.unlink()
@@ -165,7 +175,7 @@ def run_splice(splice_file, out_prefix):
 
     # Run track in splice mode
     if EXEC_EXIST:
-        track(input_file=DATIN + "/" + EXT, namelist=RSPLICE)
+        track(input_file=DATIN, namelist=RSPLICE)
     else:
         track(input_file=str(RSPLICE), namelist=None)
 
