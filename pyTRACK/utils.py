@@ -335,7 +335,7 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         .format(nx=nx, ny=ny, indat=indat)
         )
         track(input_file=vor850_name, namelist=outdir+"/spec_T42_nx" + nx + "_ny" + ny + ".in")
-        os.system("mv "+ outdir+"/specfilt_band001.year_band001 " + fname)
+        os.system("mv "+ outdir+"/specfil_band001.year_band001 " + fname)
         
         
         # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \

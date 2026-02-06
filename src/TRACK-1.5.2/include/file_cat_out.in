@@ -13,40 +13,40 @@
 
 /* spliced output file for track data            */
 
-#define  FPTTRS      Add(USER,PATHO,tr_trs?)
+#define  FPTTRS      getenv("FPTTRS")
 
 /* filtered spliced track file                   */
 
-#define  FILTRS      Add(USER,PATHO,ff_trs?)
+#define  FILTRS      getenv("FILTRS")
 
 /* grid point track data                         */
 
-#define  GRTRS       Add(USER,PATHO,tr_grid?)
+#define  GRTRS       getenv("GRTRS")
 
 /* mean tracks output file                       */
 
-#define  MNTRS       Add(USER,PATHO,mean_trs?)
+#define  MNTRS       getenv("MNTRS")
 
 /* phase speed output file                       */
 
-#define  PHTRS       Add(USER,PATHO,phase_trs?)
+#define  PHTRS       getenv("PHTRS")
 
 /* statistics output file                        */
 
-#define  STATTRS     Add(USER,PATHO,stat_trs?)
+#define  STATTRS     getenv("STATTRS")
 
 /* scaled statistics output file                */
 
-#define  STATTRS_SCL Add(USER,PATHO,stat_trs_scl?)
+#define  STATTRS_SCL getenv("STATTRS_SCL")
 
 /* combined statistics output file              */
 
-#define  STATCOM     Add(USER,PATHO,stat_com?)
+#define  STATCOM     getenv("STATCOM")
 
 /* initiation output file                       */
 
-#define  INITTRS     Add(USER,PATHO,init_trs?)
+#define  INITTRS     getenv("INITTRS")
 
 /* disapearance output file                     */
 
-#define  DISPTRS     Add(USER,PATHO,disp_trs?)
+#define  DISPTRS     getenv("DISPTRS")

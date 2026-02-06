@@ -8,25 +8,25 @@
 
 /* data input file name */
 
-#define  DATIN   Add(USER,PATHI,inputt)
+#define  DATIN   getenv("DATIN")
 
 /* input file for time averaged data */
 
-#define  DTIMAVG Add(USER,PATHI,TIME_AVG)
+#define  DTIMAVG Addtwo(PATHI,TIME_AVG)
 
 /* input file for frame times */
 
-#define  FRTIMES Add(USER,PATHI,times?)
+#define  FRTIMES getenv("FRTIMES")
 
-#define  DATCM   getenv("DATCM")   /*country map data file name */
+#define  DATCM   getenv("DATCM")  /* country map data file name */
 #define  DIMCM   3000               /* dimension of any country map data */
 
 
 /* input zonal dmax */
 
-#define  DATZN   Add(USER,DATPATH,zone.dat)
+#define  DATZN   getenv("DATZN")
 
 /* input adaptive phimax */
 
 
-#define  DATAD   Add(USER,DATPATH,adapt.dat)
+#define  DATAD   getenv("DATAD")
