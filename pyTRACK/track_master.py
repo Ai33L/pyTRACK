@@ -1,245 +1,201 @@
-"""
-Python reimplementation of the TRACK DJF workflow originally written in csh.
-
-Design principles:
-- Never change working directory
-- TRACK always writes to current working directory
-- Python immediately moves outputs to structured folders
-- All paths are explicit and configurable
-"""
-
-from pathlib import Path
+import os
 import shutil
-import re
+import subprocess
+from pathlib import Path
+from track_wrapper import track  # your Python track() wrapper
 
+# ------------------------------
+# Configuration (replace as needed)
+# ------------------------------
 
-# ---------------------------------------------------------------------
-# USER CONFIGURATION
-# ---------------------------------------------------------------------
-
-EXT = "year"
-
-# You will set these paths explicitly
-SRCDIR = Path.cwd()
-INDAT = SRCDIR / "indat"
-OUTDAT = SRCDIR / "outdat"
-OUTPUT = SRCDIR / "outputd" / "ioputd"
-
-RUNDT = "RUNDATIN"
-RUNOUT = "RUNDATOUT"
-
-INPUT_FILE = "input.nc"
+EXEC_EXIST = True  # True corresponds to original script
+EXT = "ext"
+DATIN = "datin"
 INITIAL = "!INITIAL!"
-
-# Loop control (matches csh defaults)
-NN = 1
-EE = 12
 
 ST = 1
 FN = 21
 BACK = 2
+FOREWARD = 3
 TERMFR = -1
 
+NN = 1
+EE = 12
 
-# ---------------------------------------------------------------------
-# TRACK WRAPPER (UNCHANGED LOGIC, CWD-BASED)
-# ---------------------------------------------------------------------
+RUNDT = "RUNDATIN"
+RUNOUT = "RUNDATOUT"
 
-def track(input_file="input.nc", namelist=None):
-    import os
-    import ctypes
+SRCDIR = Path.cwd()
+EXECDIR = SRCDIR / "bin"
+RDAT = SRCDIR / "indat"
+ODAT = SRCDIR / "outdat"
+DIR2 = SRCDIR / "outputd"
+DFIL = "ioputd"
+DIR3 = DIR2 / DFIL
 
-    _LIB = Path(__file__).parent / "_lib" / "libtrack.so"
-    if not _LIB.exists():
-        raise FileNotFoundError(f"libtrack.so not found at {_LIB}")
+DIR2.mkdir(exist_ok=True)
+DIR3.mkdir(parents=True, exist_ok=True)
 
-    lib = ctypes.CDLL(str(_LIB))
+# ------------------------------
+# Helper for sed-like replacements
+# ------------------------------
 
-    lib.track_main.argtypes = [
-        ctypes.c_int,
-        ctypes.POINTER(ctypes.c_char_p)
-    ]
-    lib.track_main.restype = ctypes.c_int
+def replace_namelist(template_file, S, F, initial=INITIAL, first_run=True):
+    """ Mimics the sed commands from the csh script """
+    out_lines = []
+    with open(template_file) as f:
+        for line in f:
+            line_new = line
+            line_new = line_new.replace("%INITIAL%", initial)
+            if first_run:
+                line_new = line_new.replace("#", str(S), 1).replace("!", str(F), 1)
+                line_new = line_new.replace("i%", "i")
+                line_new = line_new.replace("n~", "n")
+            else:
+                line_new = line_new.replace("#", str(S), 1).replace("!", str(F), 1)
+                line_new = line_new.replace("i%", "y")
+                if line_new.startswith("n~"):
+                    continue  # delete line starting with n~
+            out_lines.append(line_new)
+    return "".join(out_lines)
 
-    args = [
-        b"track",
-        b"-d", str(Path.cwd()).encode(),
-        b"-i", input_file.encode(),
-        b"-f", EXT.encode(),
-    ]
+# ------------------------------
+# Main loop
+# ------------------------------
 
-    argc = len(args)
-    argv = (ctypes.c_char_p * argc)(*args)
+S = ST
+F = FN
+I = F - S
 
-    if namelist is not None:
-        old_stdin_fd = os.dup(0)
-        try:
-            with open(namelist, "rb") as f:
-                os.dup2(f.fileno(), 0)
-                lib.track_main(argc, argv)
-        finally:
-            os.dup2(old_stdin_fd, 0)
-            os.close(old_stdin_fd)
+N = NN
+E = EE
+QQ = 0
+
+while N <= E:
+
+    # --- Prepare input files ---
+    fileA = ODAT / f"{RUNDT}.{EXT}"
+    fileB = ODAT / f"{RUNDT}_A.{EXT}"
+
+    first_run = N == 1
+    templateA = RDAT / f"{RUNDT}.in"
+    templateB = RDAT / f"{RUNDT}_A.in"
+
+    fileA.write_text(replace_namelist(templateA, S, F, INITIAL, first_run))
+    fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run))
+
+    # --- Create output directories ---
+    max_dir = DIR3 / f"DJF_MAX_{N}"
+    min_dir = DIR3 / f"DJF_MIN_{N}"
+    max_dir.mkdir(parents=True, exist_ok=True)
+    min_dir.mkdir(parents=True, exist_ok=True)
+
+    # --- Run TRACK for +ve field ---
+    if EXEC_EXIST:
+        track(input_file=DATIN + "/" + EXT, namelist=fileA)
     else:
-        lib.track_main(argc, argv)
+        track(input_file=str(fileA), namelist=None)
 
-
-# ---------------------------------------------------------------------
-# UTILITIES
-# ---------------------------------------------------------------------
-
-TRACK_OUTPUTS = [
-    "objout.new",
-    "tdump",
-    "idump",
-    "objout",
-    "throut",
-]
-
-
-def render_input(text, S, F, initial, i_flag="i", drop_n=False):
-    text = re.sub(r"^[0-9]*#", str(S), text, flags=re.M)
-    text = re.sub(r"^[0-9]*!", str(F), text, flags=re.M)
-    text = text.replace("%INITIAL%", initial)
-
-    if i_flag == "i":
-        text = re.sub(r"^i%", "i", text, flags=re.M)
+    # Move output files to DJF_MAX
+    for fname in [f"{RUNDT}", "objout.new", "tdump", "idump"]:
+        src = ODAT / (fname if fname != RUNDT else f"{RUNDT}")
+        dst = max_dir / fname
+        if src.exists():
+            shutil.move(str(src), str(dst))
+    
+    # --- Run TRACK for -ve field ---
+    if EXEC_EXIST:
+        track(input_file=DATIN + "/" + EXT, namelist=fileB)
     else:
-        text = re.sub(r"^i%", "y", text, flags=re.M)
+        track(input_file=str(fileB), namelist=None)
 
-    if drop_n:
-        text = re.sub(r"^n~.*$", "", text, flags=re.M)
+    # Move output files to DJF_MIN
+    for fname in [f"{RUNDT}", "objout.new", "tdump", "idump"]:
+        src = ODAT / (fname if fname != RUNDT else f"{RUNDT}")
+        dst = min_dir / fname
+        if src.exists():
+            shutil.move(str(src), str(dst))
+
+    # --- Prepare splice files ---
+    splice_max = ODAT / f"splice_max.{EXT}"
+    splice_min = ODAT / f"splice_min.{EXT}"
+    mode = 1 if N == 1 else FOREWARD
+
+    with open(splice_max, "a") as f:
+        f.write(f"{max_dir}/objout.new\n{max_dir}/tdump\n{mode}\n")
+    with open(splice_min, "a") as f:
+        f.write(f"{min_dir}/objout.new\n{min_dir}/tdump\n{mode}\n")
+
+    if QQ > 0:
+        break
+
+    # --- Update loop counters ---
+    N += 1
+    S = F - BACK
+    F = F + I if N < E else F + I + 15
+
+    if TERMFR > 0 and F > TERMFR:
+        F = TERMFR
+        E = N
+        QQ = 1
+
+# ------------------------------
+# Splice mode
+# ------------------------------
+
+def run_splice(splice_file, out_prefix):
+    temp_file = ODAT / "RSPLICE.temp.ext"
+    RSPLICE = ODAT / "RSPLICE.ext"
+
+    # Read splice template
+    with open(RDAT / "RSPLICE.in") as f_in, open(temp_file, "w") as f_temp:
+        for line in f_in:
+            if "!" in line:
+                with open(splice_file) as sf:
+                    f_temp.write(sf.read())
+            f_temp.write(line)
+
+    # Replace initial and end frame
+    text = temp_file.read_text()
+    text = text.replace("initial", str(DIR3 / "initial"))
+    text = text.replace("!", str(E))
+    RSPLICE.write_text(text)
+    temp_file.unlink()
+    splice_file.unlink()
+
+    # Run track in splice mode
+    if EXEC_EXIST:
+        track(input_file=DATIN + "/" + EXT, namelist=RSPLICE)
     else:
-        text = re.sub(r"^n~", "n", text, flags=re.M)
+        track(input_file=str(RSPLICE), namelist=None)
 
-    return text
+    # Move outputs
+    for suffix in ["tr_trs", "tr_grid", "ff_trs"]:
+        src = ODAT / f"{suffix}.{EXT}"
+        dst = DIR3 / f"{suffix}_{out_prefix}"
+        if src.exists():
+            shutil.move(str(src), str(dst))
+    shutil.move(str(RSPLICE), DIR3 / f"RSPLICE_{out_prefix}")
 
+# Run splice for positive and negative
+run_splice(ODAT / f"splice_max.{EXT}", "pos")
+run_splice(ODAT / f"splice_min.{EXT}", "neg")
 
-def run_track(namelist_text, workdir):
-    workdir.mkdir(parents=True, exist_ok=True)
+# ------------------------------
+# Final cleanup
+# ------------------------------
+for f in ODAT.glob(f"{RUNDT}*.{EXT}"):
+    f.unlink()
+for f in ["idump.ext", "throut.ext", "objout.ext", ".run_at.lock.ext"]:
+    fp = ODAT / f
+    if fp.exists():
+        fp.unlink()
 
-    namelist = workdir / "namelist.in"
-    namelist.write_text(namelist_text)
+# Move initial files
+for fname in ["initial.ext", "user_tavg.ext", "user_tavg.ext_var", "user_tavg.ext_varfil"]:
+    src = ODAT / fname
+    if src.exists():
+        shutil.move(str(src), DIR3 / fname)
 
-    track(input_file=INPUT_FILE, namelist=str(namelist))
-
-    for name in TRACK_OUTPUTS:
-        p = Path(f"{name}.{EXT}")
-        if p.exists():
-            shutil.move(p, workdir / name)
-
-
-# ---------------------------------------------------------------------
-# MAIN WORKFLOW
-# ---------------------------------------------------------------------
-
-def main():
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-
-    template = (INDAT / f"{RUNDT}.in").read_text()
-    template_a = (INDAT / f"{RUNDT}_A.in").read_text()
-
-    splice_max = []
-    splice_min = []
-
-    S = ST
-    F = FN
-    I = F - S
-
-    N = NN
-    E = EE
-
-    while N <= E:
-        # ---------- MAX ----------
-        max_dir = OUTPUT / f"DJF_MAX_{N}"
-
-        max_input = render_input(
-            template,
-            S,
-            F,
-            INITIAL,
-            i_flag="i" if N == 1 else "y",
-            drop_n=(N != 1),
-        )
-
-        run_track(max_input, max_dir)
-
-        splice_max.append((max_dir / "objout.new", max_dir / "tdump", 1 if N == 1 else 3))
-
-        # ---------- MIN ----------
-        min_dir = OUTPUT / f"DJF_MIN_{N}"
-
-        min_input = render_input(
-            template_a,
-            S,
-            F,
-            INITIAL,
-            i_flag="i",
-            drop_n=False,
-        )
-
-        run_track(min_input, min_dir)
-
-        splice_min.append((min_dir / "objout.new", min_dir / "tdump", 1 if N == 1 else 3))
-
-        # ---------- LOOP CONTROL ----------
-        N += 1
-        S = F - BACK
-
-        if N < E:
-            F += I
-        else:
-            F += I + 15
-
-        if TERMFR > 0 and F > TERMFR:
-            F = TERMFR
-            E = N
-            break
-
-    # -----------------------------------------------------------------
-    # SPLICING
-    # -----------------------------------------------------------------
-
-    def write_splice(entries, path):
-        with open(path, "w") as f:
-            for o, t, flag in entries:
-                f.write(f"{o}\n{t}\n{flag}\n")
-
-    rs_template = (INDAT / "RSPLICE.in").read_text()
-
-    for label, entries in [("pos", splice_max), ("neg", splice_min)]:
-        splice_file = OUTDAT / f"splice_{label}.{EXT}"
-        write_splice(entries, splice_file)
-
-        text = rs_template
-        text = re.sub(r"^[0-9]*!", str(len(entries)), text, flags=re.M)
-        text = re.sub(r"^[0-9]*!", splice_file.read_text(), text, flags=re.M)
-        text = text.replace("initial", str(OUTPUT / "initial"))
-
-        rs_file = OUTDAT / f"RSPLICE_{label}.{EXT}"
-        rs_file.write_text(text)
-
-        track(input_file=INPUT_FILE, namelist=str(rs_file))
-
-        for name in ["tr_trs", "tr_grid", "ff_trs"]:
-            p = Path(f"{name}.{EXT}")
-            if p.exists():
-                shutil.move(p, OUTPUT / f"{name}_{label}")
-
-    # -----------------------------------------------------------------
-    # FINAL TIDY
-    # -----------------------------------------------------------------
-
-    for f in OUTDAT.glob(f"*.{EXT}"):
-        f.unlink(missing_ok=True)
-
-    for f in ["initial", "user_tavg", "user_tavg_var", "user_tavg_varfil"]:
-        p = OUTDAT / f"{f}.{EXT}"
-        if p.exists():
-            shutil.move(p, OUTPUT / f)
-
-    shutil.make_archive(str(OUTPUT), "gztar", root_dir=OUTPUT)
-
-
-if __name__ == "__main__":
-    main()
+# Compress output directory
+shutil.make_archive(str(DIR3), 'gztar', root_dir=str(DIR3))
