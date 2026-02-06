@@ -3,9 +3,9 @@
 
 #include "file_path.h"
 
-#define  CONSDAT         Addtwo(DATPATH,constraints.dat)
-#define  CONSDAT_SMOOPY  Addtwo(DATPATH,constraints.dat.reg)
-#define  CONSDAT_SPHERY  Addtwo(DATPATH,constraints.dat.sphery)
+#define  CONSDAT         getenv("CONSDAT")
+#define  CONSDAT_SMOOPY  getenv("CONSDAT_SMOOPY")
+#define  CONSDAT_SPHERY  getenv("CONSDAT_SPHERY")
 
 
 /* structure for constraint data used in the contrained conjugate

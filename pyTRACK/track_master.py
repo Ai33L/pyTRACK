@@ -2,16 +2,16 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-from track_wrapper import track  # your Python track() wrapper
+from pyTRACK import track  # your Python track() wrapper
 
 # ------------------------------
 # Configuration (replace as needed)
 # ------------------------------
 
-EXEC_EXIST = True  # True corresponds to original script
-EXT = "ext"
-DATIN = "datin"
-INITIAL = "!INITIAL!"
+EXEC_EXIST=True
+DATIN = "/home/requiem/dev/save/T42filt_vor850yall.dat"
+INITIAL = "/home/requiem/dev/save/initial.T42_NH"
+EXT="666"
 
 ST = 1
 FN = 21
@@ -22,19 +22,19 @@ TERMFR = -1
 NN = 1
 EE = 12
 
-RUNDT = "RUNDATIN"
+RUNDT = "RUNDATIN.VOR"
 RUNOUT = "RUNDATOUT"
 
-SRCDIR = Path.cwd()
-EXECDIR = SRCDIR / "bin"
+SRCDIR = Path('/home/requiem/dev/curr/pyTRACK/pyTRACK')
 RDAT = SRCDIR / "indat"
-ODAT = SRCDIR / "outdat"
-DIR2 = SRCDIR / "outputd"
+ODAT = Path('/home/requiem/dev/save')
+DIR2 = ODAT / "outputd"
 DFIL = "ioputd"
 DIR3 = DIR2 / DFIL
 
 DIR2.mkdir(exist_ok=True)
 DIR3.mkdir(parents=True, exist_ok=True)
+
 
 # ------------------------------
 # Helper for sed-like replacements
@@ -92,7 +92,7 @@ while N <= E:
 
     # --- Run TRACK for +ve field ---
     if EXEC_EXIST:
-        track(input_file=DATIN + "/" + EXT, namelist=fileA)
+        track(input_file=DATIN, namelist=fileA)
     else:
         track(input_file=str(fileA), namelist=None)
 
@@ -105,7 +105,7 @@ while N <= E:
     
     # --- Run TRACK for -ve field ---
     if EXEC_EXIST:
-        track(input_file=DATIN + "/" + EXT, namelist=fileB)
+        track(input_file=DATIN, namelist=fileB)
     else:
         track(input_file=str(fileB), namelist=None)
 

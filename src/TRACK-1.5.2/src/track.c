@@ -961,7 +961,8 @@ analy:
 
           close_file(fdatin, filnam);
           strncpy(filnam, TENDENCY, MAXCHR);
-          if(iext) strcpy(strstr(filnam, EXTENSION), fext);
+          /*if(iext) strcpy(strstr(filnam, EXTENSION), fext);*/
+          if(iext) strcat(filnam, fext);
 
           if(fexist(filnam, "r")){
 
@@ -1167,7 +1168,8 @@ analy:
             objwr = 0;
 
             strncpy(comobj,COMOBJ, MAXCHR);
-            if(iext) strcpy(strstr(comobj, EXTENSION), fext);
+            /*if(iext) strcpy(strstr(comobj, EXTENSION), fext);*/
+            if(iext) strcat(comobj, fext);
             fobjo = open_file(comobj, "w");
 
             if(aniso == 'y') fprintf(fobjo, "%d %d\n", tf, 1);

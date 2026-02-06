@@ -112,4 +112,10 @@ def set_track_env():
     os.environ["STATTRS_SCL"] = os.path.join(curr, "stat_trs_scl?")
     os.environ["STATCOM"] = os.path.join(curr, "stat_com?") 
     os.environ["INITTRS"] = os.path.join(curr, "init_trs?") 
-    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs?") 
+    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs?")
+
+    ## extras
+    os.environ["CONSDAT"] = os.path.join(pkgpath, "data", "constraints.dat") 
+    os.environ["CONSDAT_SMOOPY"] = os.path.join(pkgpath, "data", "constraints.dat.reg") 
+    os.environ["CONSDAT_SPHERY"] = os.path.join(pkgpath, "data", "constraints.dat.sphery") 
+
