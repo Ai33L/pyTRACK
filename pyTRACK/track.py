@@ -103,16 +103,16 @@ def set_track_env():
     os.environ["INTERP_TH"] = os.path.join(curr, "interp_th")
 
     ## stat out files
-    os.environ["FPTTRS"] = os.path.join(curr, "tr_trs?") 
-    os.environ["FILTRS"] = os.path.join(curr, "ff_trs?") 
-    os.environ["GRTRS"] = os.path.join(curr, "tr_grid?") 
-    os.environ["MNTRS"] = os.path.join(curr, "mean_trs?") 
-    os.environ["PHTRS"] = os.path.join(curr, "phase_trs?")
-    os.environ["STATTRS"] = os.path.join(curr, "stat_trs?")
-    os.environ["STATTRS_SCL"] = os.path.join(curr, "stat_trs_scl?")
-    os.environ["STATCOM"] = os.path.join(curr, "stat_com?") 
-    os.environ["INITTRS"] = os.path.join(curr, "init_trs?") 
-    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs?")
+    os.environ["FPTTRS"] = os.path.join(curr, "tr_trs") 
+    os.environ["FILTRS"] = os.path.join(curr, "ff_trs") 
+    os.environ["GRTRS"] = os.path.join(curr, "tr_grid") 
+    os.environ["MNTRS"] = os.path.join(curr, "mean_trs") 
+    os.environ["PHTRS"] = os.path.join(curr, "phase_trs")
+    os.environ["STATTRS"] = os.path.join(curr, "stat_trs")
+    os.environ["STATTRS_SCL"] = os.path.join(curr, "stat_trs_scl")
+    os.environ["STATCOM"] = os.path.join(curr, "stat_com") 
+    os.environ["INITTRS"] = os.path.join(curr, "init_trs") 
+    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs")
 
     ## extras
     os.environ["CONSDAT"] = os.path.join(pkgpath, "data", "constraints.dat") 

@@ -10,8 +10,8 @@ from math import ceil
 # ------------------------------
 
 EXEC_EXIST=True
-DATIN = "/home/requiem/dev/save/T42filt_vor850yall.dat"
-INITIAL = "/home/requiem/dev/save/initial.T42_NH"
+DATIN = "/home/requiem_at_home/dev/save/T42filt_vor850yall.dat"
+INITIAL = "/home/requiem_at_home/dev/save/initial.T42_NH"
 EXT="666"
 
 ST = 1
@@ -26,39 +26,65 @@ EE = ceil(150/FN)
 RUNDT = "RUNDATIN.VOR"
 RUNOUT = "RUNDATOUT"
 
-SRCDIR = Path('/home/requiem/dev/curr/pyTRACK/pyTRACK')
+SRCDIR = Path('/home/requiem_at_home/dev/curr/pyTRACK/pyTRACK')
 RDAT = SRCDIR / "indat"
-ODAT = Path('/home/requiem/dev/save')
+ODAT = Path('/home/requiem_at_home/dev/save')
 DIR2 = ODAT / "outputd"
-DFIL = "ioputd"
-DIR3 = DIR2 / DFIL
 
 DIR2.mkdir(exist_ok=True)
-DIR3.mkdir(parents=True, exist_ok=True)
 
 
 # ------------------------------
 # Helper for sed-like replacements
 # ------------------------------
 
-def replace_namelist(template_file, S, F, initial=INITIAL, first_run=True):
-    """ Mimics the sed commands from the csh script """
+import re
+from pathlib import Path
+
+def replace_namelist(template_file, S, F, initial, first_run=True, flag=False):
+    """
+    Mimics sed namelist replacements.
+    
+    If first_run=True: corresponds to N == 1 in csh script
+    If flag=True: applies special replacement for _A.in files
+    """
     out_lines = []
+
     with open(template_file) as f:
         for line in f:
-            line_new = line
-            line_new = line_new.replace("%INITIAL%", initial)
+            # Replace leading numbers + #
+            if re.match(r"^[0-9]*#", line):
+                line = re.sub(r"^[0-9]*#", str(S), line)
+
+            # Replace leading numbers + !
+            if re.match(r"^[0-9]*!", line):
+                line = re.sub(r"^[0-9]*!", str(F), line)
+
+            # First run (N==1)
             if first_run:
-                line_new = line_new.replace("#", str(S), 1).replace("!", str(F), 1)
-                line_new = line_new.replace("i%", "i")
-                line_new = line_new.replace("n~", "n")
+                if line.lstrip().startswith("i%"):
+                    line = re.sub(r"^i%", "i", line)
+                if line.lstrip().startswith("n~"):
+                    line = re.sub(r"^n~", "n", line)
+            # Special flag (_A.in)
+            elif flag:
+                if line.lstrip().startswith("i%"):
+                    line = re.sub(r"^i%", "y", line)
+                # Do NOT delete lines starting with n~ (unlike the normal else)
+            # Normal else (N>1, not flag)
             else:
-                line_new = line_new.replace("#", str(S), 1).replace("!", str(F), 1)
-                line_new = line_new.replace("i%", "y")
-                if line_new.startswith("n~"):
-                    continue  # delete line starting with n~
-            out_lines.append(line_new)
+                if line.lstrip().startswith("i%"):
+                    line = re.sub(r"^i%", "y", line)
+                if line.lstrip().startswith("n~"):
+                    continue  # delete this line
+
+            # Replace %INITIAL% everywhere
+            line = line.replace("%INITIAL%", initial)
+            out_lines.append(line)
+
     return "".join(out_lines)
+
+
 
 # ------------------------------
 # Main loop
@@ -85,8 +111,8 @@ while N <= E:
     fileA.write_text(replace_namelist(templateA, S, F, INITIAL, first_run))
 
     # --- Create output directories ---
-    max_dir = DIR3 / f"DJF_MAX_{N}"
-    min_dir = DIR3 / f"DJF_MIN_{N}"
+    max_dir = DIR2 / f"DJF_MAX_{N}"
+    min_dir = DIR2 / f"DJF_MIN_{N}"
     max_dir.mkdir(parents=True, exist_ok=True)
     min_dir.mkdir(parents=True, exist_ok=True)
 
@@ -107,7 +133,7 @@ while N <= E:
             print(f"Moving {src_file} -> {dst_file}")
             shutil.move(str(src_file), str(dst_file))
     
-    fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run))
+    fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run, flag=True))
     # --- Run TRACK for -ve field ---
     if EXEC_EXIST:
         print('starting - ', N)
@@ -149,43 +175,63 @@ while N <= E:
 
 print('part 1 success!!')
 
+shutil.move("initialyear", DIR2 / "initial")
+
 # ------------------------------
 # Splice mode
 # ------------------------------
 
+import re
+from pathlib import Path
+
 def run_splice(splice_file, out_prefix):
-    temp_file = ODAT / "RSPLICE.temp.ext"
-    RSPLICE = ODAT / "RSPLICE.ext"
+    temp_file = ODAT / f"RSPLICE.temp.{out_prefix}"
+    rsplice = ODAT / f"RSPLICE.{out_prefix}"
 
-    # Read splice template
-    with open(RDAT / "RSPLICE.in") as f_in, open(temp_file, "w") as f_temp:
+    ODAT.mkdir(parents=True, exist_ok=True)
+
+    marker_re = re.compile(r"^[0-9]+!")
+
+    with open(RDAT / "RSPLICE.in", "r") as f_in, open(temp_file, "w") as f_temp:
+        splice_text = splice_file.read_text()
         for line in f_in:
-            if "!" in line:
-                with open(splice_file) as sf:
-                    f_temp.write(sf.read())
             f_temp.write(line)
+            if marker_re.match(line):
+                f_temp.write(splice_text)
 
-    # Replace initial and end frame
     text = temp_file.read_text()
-    text = text.replace("initial", str(DIR3 / "initialyear"))
-    text = text.replace("!", str(E))
-    RSPLICE.write_text(text)
+    text = text.replace("initial", str(DIR2 / "initial"))
+    text = re.sub(r"^[0-9]+!", str(E), text, flags=re.MULTILINE)
+
+    rsplice.write_text(text)
+
     temp_file.unlink()
     splice_file.unlink()
 
     # Run track in splice mode
     if EXEC_EXIST:
-        track(input_file=DATIN, namelist=RSPLICE)
+        track(input_file=DATIN, namelist=rsplice)
     else:
-        track(input_file=str(RSPLICE), namelist=None)
+        track(input_file=str(rsplice), namelist=None)
 
     # Move outputs
-    for suffix in ["tr_trs", "tr_grid", "ff_trs"]:
-        src = ODAT / f"{suffix}.{EXT}"
-        dst = DIR3 / f"{suffix}_{out_prefix}"
-        if src.exists():
+
+    prefixes = ["tr_trs", "tr_grid", "ff_trs"]
+    for prefix in prefixes:
+        for src in ODAT.glob(f"{prefix}*"):
+            name = src.name
+
+            # strip anything after the prefix, before optional .nc
+            m = re.match(rf"({prefix})([^.]*)?(\.nc)?$", name)
+            if not m:
+                continue
+            base = m.group(1)          # tr_trs / ff_trs / tr_grid
+            ext = m.group(3) or ""     # .nc or empty
+
+            dst = DIR2 / f"{base}_{out_prefix}{ext}"
             shutil.move(str(src), str(dst))
-    shutil.move(str(RSPLICE), DIR3 / f"RSPLICE_{out_prefix}")
+    shutil.move(str(rsplice), DIR2 / f"RSPLICE_{out_prefix}")
+
 
 # Run splice for positive and negative
 run_splice(ODAT / f"splice_max.{EXT}", "pos")
@@ -205,7 +251,7 @@ for f in ["idump.ext", "throut.ext", "objout.ext", ".run_at.lock.ext"]:
 for fname in ["initial.ext", "user_tavg.ext", "user_tavg.ext_var", "user_tavg.ext_varfil"]:
     src = ODAT / fname
     if src.exists():
-        shutil.move(str(src), DIR3 / fname)
+        shutil.move(str(src), DIR2 / fname)
 
 # Compress output directory
-shutil.make_archive(str(DIR3), 'gztar', root_dir=str(DIR3))
+shutil.make_archive(str(DIR2), 'gztar', root_dir=str(DIR2))

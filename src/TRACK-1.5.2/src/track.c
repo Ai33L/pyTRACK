@@ -48,7 +48,7 @@
 
 struct frame_objs *threshold(FILE * , int , int );
 int search_area_check(int , int , int);
-struct tot_tr *splice(int * );
+struct tot_tr *splice_tracks(int * );
 struct track_ind *mge_tracks(struct frame_objs * , int );
 void statistic(struct tot_tr *, int );
 void std_read_header(GRID * , int * , FILE * , int * , int * );
@@ -701,7 +701,10 @@ analy:
 
        else if(anty ==1 || anty == 2) {
 
-          if(anty == 1) all_tr = splice(&trackn);
+          if(anty == 1) {
+            printf("About to call splice()\n");
+            all_tr = splice_tracks(&trackn);
+         }
 
           printf("do you want to perform any analyses, or display     \r\n"
                  "existing results:                                   \r\n"
