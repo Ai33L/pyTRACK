@@ -118,50 +118,39 @@ def set_track_env():
     os.environ["CONSDAT_SPHERY"] = os.path.join(pkgpath, "data", "constraints.dat.sphery")
 
 
-def track_splice():
+def track_splice(datin, ext, ntime):
 
-    import os
     import shutil
-    import subprocess
     from pathlib import Path
-    from pyTRACK import track  # your Python track() wrapper
     from math import ceil
+    import re
+    import os
 
-    # ------------------------------
-    # Configuration (replace as needed)
-    # ------------------------------
+    SRCDIR = Path(os.path.dirname(__file__))
+    RDAT = SRCDIR / "indat"
+    ODAT=Path(os.getcwd())
+    DIR2 = ODAT / "output_track"
+    DIR3 = DIR2 / ext
 
-    EXEC_EXIST=True
-    DATIN = "/home/requiem_at_home/dev/save/T42filt_vor850yall.dat"
-    INITIAL = "/home/requiem_at_home/dev/save/initial.T42_NH"
-    EXT="666"
+    DATIN = datin
+    INITIAL = os.path.join(SRCDIR, 'data', 'initial.T42_'+ext[:2])
+    EXT=ext
 
     ST = 1
     FN = 62
     BACK = 2
     FOREWARD = 3
     TERMFR = -1
-
     NN = 1
-    EE = ceil(150/FN)
 
     RUNDT = "RUNDATIN.VOR"
     RUNOUT = "RUNDATOUT"
 
-    SRCDIR = Path('/home/requiem_at_home/dev/curr/pyTRACK/pyTRACK')
-    RDAT = SRCDIR / "indat"
-    ODAT = Path('/home/requiem_at_home/dev/save')
-    DIR2 = ODAT / "outputd"
+    # get number of timesteps and number of chunks for tracking
+    EE = ceil(ntime/FN)
 
     DIR2.mkdir(exist_ok=True)
-
-
-    # ------------------------------
-    # Helper for sed-like replacements
-    # ------------------------------
-
-    import re
-    from pathlib import Path
+    DIR3.mkdir(exist_ok=True)
 
     def replace_namelist(template_file, S, F, initial, first_run=True, flag=False):
         """
@@ -233,17 +222,14 @@ def track_splice():
         fileA.write_text(replace_namelist(templateA, S, F, INITIAL, first_run))
 
         # --- Create output directories ---
-        max_dir = DIR2 / f"DJF_MAX_{N}"
-        min_dir = DIR2 / f"DJF_MIN_{N}"
+        max_dir = DIR3 / f"DJF_MAX_{N}"
+        min_dir = DIR3 / f"DJF_MIN_{N}"
         max_dir.mkdir(parents=True, exist_ok=True)
         min_dir.mkdir(parents=True, exist_ok=True)
 
         # --- Run TRACK for +ve field ---
-        if EXEC_EXIST:
-            print('starting', N, S, F)
-            track(input_file=DATIN, namelist=fileA)
-        else:
-            track(input_file=str(fileA), namelist=None)
+        print('starting', N, S, F)
+        track(input_file=DATIN, namelist=fileA)
 
 
         # Move output files to DJF_MAX
@@ -257,11 +243,8 @@ def track_splice():
         
         fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run, flag=True))
         # --- Run TRACK for -ve field ---
-        if EXEC_EXIST:
-            print('starting - ', N)
-            track(input_file=DATIN, namelist=fileB)
-        else:
-            track(input_file=str(fileB), namelist=None)
+        print('starting - ', N)
+        track(input_file=DATIN, namelist=fileB)
 
         # Move output files to DJF_MIN
         print('moving - ', N)
@@ -297,7 +280,7 @@ def track_splice():
 
     print('part 1 success!!')
 
-    shutil.move("initialyear", DIR2 / "initial")
+    shutil.move("initial"+ext, DIR3 / "initial")
 
     # ------------------------------
     # Splice mode
@@ -322,7 +305,7 @@ def track_splice():
                     f_temp.write(splice_text)
 
         text = temp_file.read_text()
-        text = text.replace("initial", str(DIR2 / "initial"))
+        text = text.replace("initial", str(DIR3 / "initial"))
         text = re.sub(r"^[0-9]+!", str(E), text, flags=re.MULTILINE)
 
         rsplice.write_text(text)
@@ -331,10 +314,7 @@ def track_splice():
         splice_file.unlink()
 
         # Run track in splice mode
-        if EXEC_EXIST:
-            track(input_file=DATIN, namelist=rsplice)
-        else:
-            track(input_file=str(rsplice), namelist=None)
+        track(input_file=DATIN, namelist=rsplice)
 
         # Move outputs
 
@@ -350,9 +330,9 @@ def track_splice():
                 base = m.group(1)          # tr_trs / ff_trs / tr_grid
                 ext = m.group(3) or ""     # .nc or empty
 
-                dst = DIR2 / f"{base}_{out_prefix}{ext}"
+                dst = DIR3 / f"{base}_{out_prefix}{ext}"
                 shutil.move(str(src), str(dst))
-        shutil.move(str(rsplice), DIR2 / f"RSPLICE_{out_prefix}")
+        shutil.move(str(rsplice), DIR3 / f"RSPLICE_{out_prefix}")
 
 
     # Run splice for positive and negative
@@ -373,9 +353,9 @@ def track_splice():
     for fname in ["initial.ext", "user_tavg.ext", "user_tavg.ext_var", "user_tavg.ext_varfil"]:
         src = ODAT / fname
         if src.exists():
-            shutil.move(str(src), DIR2 / fname)
+            shutil.move(str(src), DIR3 / fname)
 
     # Compress output directory
-    shutil.make_archive(str(DIR2), 'gztar', root_dir=str(DIR2))
+    shutil.make_archive(str(DIR3), 'gztar', root_dir=str(DIR3))
 
 

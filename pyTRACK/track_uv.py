@@ -1,7 +1,8 @@
 import shutil
 import os
+from typing import Literal
 from math import ceil
-from .track import track
+from .track import track, track_splice
 from .utils import data_indat, regrid
 
 try:
@@ -34,13 +35,20 @@ def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
     track(input_file=uv_file, namelist='calcvor_onelev_spec.in')
     
 
-def track_uv(infile, outdirectory, NH=True, ysplit=False):
+def track_uv(infile,
+             outdirectory=None,
+             hemisphere: Literal['NH', 'SH'] = 'NH',
+             ysplit: bool = False,
+             trunc: Literal['T42', 'T63'] = 'T42'):
 
-    # set outdir -- full path the output track directory
+    if outdirectory==None:
+        outdirectory=os.getcwd()
+    else:
+        os.chdir(outdirectory)
     outdir = os.path.abspath(os.path.expanduser(outdirectory))
     print(outdir)
 
-    # read data charactheristics
+    # read data characteristics
     data = data_indat(infile)
     gridtype = data.get_grid_type()
     if ("va" not in data.vars) or ("ua" not in data.vars):
@@ -96,15 +104,11 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
     if not ysplit:
         years = ["all"]
 
-    if NH == True:
-        hemisphere = "NH"
-    else:
-        hemisphere = "SH"
-
     # do tracking for one year at a time
     
     for year in years:
         print("Running TRACK for year: " + year + "...")
+        ext=hemisphere+'_y'+year
 
         # select year from data
         if ysplit:
@@ -114,16 +118,11 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         else:
             year_file=infile_e
 
-        # directory containing year specific track output
-        c_input = hemisphere + "_" + year 
-
-        # get number of timesteps and number of chunks for tracking
         data = data_indat(year_file)
         ntime = data.get_timesteps()
-        nchunks = ceil(ntime/62)
 
         # calculate vorticity from UV
-        vor850_name = "vor850y"+year+".dat"
+        vor850_name = "vor850"+ext+".dat"
         calc_vorticity(year_file, outfile=vor850_name)
 
         fname = "T42filt_" + vor850_name
@@ -132,11 +131,10 @@ def track_uv(infile, outdirectory, NH=True, ysplit=False):
         'sed -e "s/NX/{nx}/;s/NY/{ny}/;s/TRUNC/42/" {indat} > spec_T42_nx{nx}_ny{ny}.in'
         .format(nx=nx, ny=ny, indat=indat)
         )
-        track(input_file=vor850_name, namelist=outdir+"/spec_T42_nx" + nx + "_ny" + ny + ".in")
-        os.system("mv "+ outdir+"/specfil_band001.year_band001 " + fname)
-        
+        track(input_file=vor850_name, ext=ext, namelist="spec_T42_nx" + nx + "_ny" + ny + ".in")
+        os.system("mv "+ "specfil_band001."+ext+"_band001 " + fname)
 
-        print(ntime)
+        track_splice(fname, ext, ntime)
         
         # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
         #     fname + " -f=y" + year + \
