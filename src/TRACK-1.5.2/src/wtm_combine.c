@@ -75,11 +75,11 @@ void wtm_combine(FILE *fdat)
 
 /* setup output file paths and names */
 
-    strncpy(outfile[0], Add(USER,PATHO,comp_tavg), MAXCHR);
-    strncpy(outfile[1], Add(USER,PATHO,comp_var), MAXCHR);
-    strncpy(outfile[2], Add(USER,PATHO,comp_wsum), MAXCHR);
-    strncpy(outfile[3], Add(USER,PATHO,comp_varfil), MAXCHR);
-    strncpy(outfile[4], Add(USER,PATHO,comp_specwt), MAXCHR);
+    strncpy(outfile[0], Addtwo(PATHO,comp_tavg), MAXCHR);
+    strncpy(outfile[1], Addtwo(PATHO,comp_var), MAXCHR);
+    strncpy(outfile[2], Addtwo(PATHO,comp_wsum), MAXCHR);
+    strncpy(outfile[3], Addtwo(PATHO,comp_varfil), MAXCHR);
+    strncpy(outfile[4], Addtwo(PATHO,comp_specwt), MAXCHR);
 
 
     printf("How many years are there to combine?\n\n");

@@ -19,33 +19,33 @@
 
 /* output file for thresholded data                      */
 
-#define  DATTHRO       Add(USER,PATHO,throut?)
+#define  DATTHRO       getenv("DATTHRO")
 
 /* output file for points which constitute objects       */
 
-#define  DOUTOBJ       Add(USER,PATHO,objout?)
+#define  DOUTOBJ       getenv("DOUTOBJ")
 
-#define  COMOBJ        Add(USER,PATHO,comb_obj?)
+#define  COMOBJ        getenv("COMOBJ")
      
 /* object data output file after feature point filtering */
 
-#define  NEWOBJF       Add(USER,PATHO,objout.new?)
+#define  NEWOBJF       getenv("NEWOBJF")
 
 /* output file for final track data                      */
 
-#define  TDUMP         Add(USER,PATHO,tdump?)
+#define  TDUMP         getenv("TDUMP")
 
 /* output file for initial track data                    */
  
-#define  IDUMP         Add(USER,PATHO,idump?)
+#define  IDUMP         getenv("IDUMP")
 
 /* time average file                                     */
 
-#define  TAVGE         Add(USER,PATHO,user_tavg?)
+#define  TAVGE         getenv("TAVGE")
 
 /* tendency file                                         */
 
-#define  TENDENCY      Add(USER,PATHO,field_tend?)
+#define  TENDENCY      getenv("TENDENCY")
 
 /* spectraly filtered fields output stub filename        */
 
@@ -53,32 +53,32 @@
 
 /* spectral response for Lanczos filtering               */
 
-#define  LANCZOS_RESP  Add(USER,PATHO,lanczos_resp?)
+#define  LANCZOS_RESP  getenv("LANCZOS_RESP")
 
 /* Lanczos weights                                       */
 
-#define  LANCZOS_W     Add(USER,PATHO,lanczos_w?)
+#define  LANCZOS_W     getenv("LANCZOS_W")
 
 /* time domain filtered fields output stub filename      */
 
-#define  TIME_FILT     Add(USER,PATHO,filt_time?)
+#define  TIME_FILT     getenv("TIME_FILT")
 
 /* data conversion output filename stub                  */
 
-#define  CONVERT       Add(USER,PATHO,conv_bin?)
+#define  CONVERT       getenv("CONVERT")
 
 /* data extraction output filename stub                  */
 
-#define  EXTRACT       Add(USER,PATHO,extract?)
+#define  EXTRACT       getenv("EXTRACT")
 
 /* data smoothing output filename stub                  */
 
-#define  SMOOTH       Add(USER,PATHO,smooth?)
+#define  SMOOTH       getenv("SMOOTH")
 
 /* data masking output filename stub                    */
 
-#define  MASK       Add(USER,PATHO,mask?)
+#define  MASK       getenv("MASK")
 
 /* data output from threshold on current projection     */
 
-#define  INTERP_TH       Add(USER,PATHO,interp_th?)
+#define  INTERP_TH       getenv("INTERP_TH")

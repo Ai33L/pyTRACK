@@ -48,7 +48,7 @@
 
 struct frame_objs *threshold(FILE * , int , int );
 int search_area_check(int , int , int);
-struct tot_tr *splice(int * );
+struct tot_tr *splice_tracks(int * );
 struct track_ind *mge_tracks(struct frame_objs * , int );
 void statistic(struct tot_tr *, int );
 void std_read_header(GRID * , int * , FILE * , int * , int * );
@@ -701,7 +701,10 @@ analy:
 
        else if(anty ==1 || anty == 2) {
 
-          if(anty == 1) all_tr = splice(&trackn);
+          if(anty == 1) {
+            printf("About to call splice()\n");
+            all_tr = splice_tracks(&trackn);
+         }
 
           printf("do you want to perform any analyses, or display     \r\n"
                  "existing results:                                   \r\n"
@@ -961,7 +964,8 @@ analy:
 
           close_file(fdatin, filnam);
           strncpy(filnam, TENDENCY, MAXCHR);
-          if(iext) strcpy(strstr(filnam, EXTENSION), fext);
+          /*if(iext) strcpy(strstr(filnam, EXTENSION), fext);*/
+          if(iext) strcat(filnam, fext);
 
           if(fexist(filnam, "r")){
 
@@ -1167,7 +1171,8 @@ analy:
             objwr = 0;
 
             strncpy(comobj,COMOBJ, MAXCHR);
-            if(iext) strcpy(strstr(comobj, EXTENSION), fext);
+            /*if(iext) strcpy(strstr(comobj, EXTENSION), fext);*/
+            if(iext) strcat(comobj, fext);
             fobjo = open_file(comobj, "w");
 
             if(aniso == 'y') fprintf(fobjo, "%d %d\n", tf, 1);

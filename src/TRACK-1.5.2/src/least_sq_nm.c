@@ -18,7 +18,7 @@
 
 #define TOLDIAG 1.0e-10
 
-#define FSPPATH  Add(USER,SPPATH,)
+/*AS changing FSPPATH for SPPATH - just so you know when things break*/
 
 extern GRID *gr;
 
@@ -113,14 +113,14 @@ double *least_sq_nm(float *ap, int ntr, int im, int nx, int immp, int memuse)
        printf("Do you want to load an existing cholesky decomposition of the          \r\n"
               "normal equations, 'y' or 'n'. This data must be correct for the        \r\n"
               "current grid and spectral truncation, this is the users responsibility.\r\n"
-              "The data must also reside in the directory:\n %s\n", FSPPATH);
+              "The data must also reside in the directory:\n %s\n", SPPATH);
 
        scanf("\n");
        if(getchar() == 'y'){
 
           printf("What is the filname to read?\n\n"); 
           scanf("%s", filnam); 
-          strcpy(filchol, FSPPATH);
+          strcpy(filchol, SPPATH);
           strcat(filchol, filnam);
 
           if(!immp){
@@ -185,7 +185,7 @@ double *least_sq_nm(float *ap, int ntr, int im, int nx, int immp, int memuse)
 
           printf("What filname should be used for memory mapping?\n\n"); 
           scanf("%s", filnam); 
-          strcpy(filchol, FSPPATH);
+          strcpy(filchol, SPPATH);
           strcat(filchol, filnam);
 
 /* create file for memory mapping */
@@ -336,7 +336,7 @@ printf("\n\n"); */
 
                   printf("What is the unique filename?\n\n");
                   scanf("%s", filnam); 
-                  strcpy(filchol, FSPPATH);
+                  strcpy(filchol, SPPATH);
                   strcat(filchol, filnam);
 
                   fchol = open_file(filchol, "w");

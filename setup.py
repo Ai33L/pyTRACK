@@ -37,8 +37,8 @@ class BuildTRACK(build_py):
 
 setup(
     name="pyTRACK",
-    version="0.1.0",
-    description="Python wrapper for the TRACK tracking system",
+    version="0.2.0",
+    description="Python-wrapped implementation of the TRACK software",
     packages=find_packages(),
     cmdclass={"build_py": BuildTRACK},
     include_package_data=True,

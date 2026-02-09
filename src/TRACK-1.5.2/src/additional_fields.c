@@ -322,7 +322,8 @@ void additional_fields(struct tot_tr *trs, int trnum, off_t pl, FILE *fst, int i
    printf("****INFORMATION****, lowest frame Id is %d and highest frame Id is %d\n\n", imnfr, imxfr);
    
    strncpy(trout, FILTRS, MAXCHR);
-   if(iext) strcpy(strstr(trout, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(trout, EXTENSION), fext);*/
+   if(iext) strcat(trout, fext);
    strcat(trout, "_addfld");
 
 
@@ -399,7 +400,8 @@ void additional_fields(struct tot_tr *trs, int trnum, off_t pl, FILE *fst, int i
 /* allocate memory for masks and create masks */
 
        strncpy(mskout, MASK, MAXCHR);
-       if(iext) strcpy(strstr(mskout, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(mskout, EXTENSION), fext);*/
+       if(iext) strcat(mskout, fext);
 
        forog = open_file(mskout, "w");
        write_header(gr, forog);

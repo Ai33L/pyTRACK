@@ -156,10 +156,14 @@ struct frame_objs *threshold(FILE *fdatin, int reo, int sn)
      strncpy(fintp, INTERP_TH, MAXCHR);
 
      if(iext){
-        strcpy(strstr(fout1, EXTENSION), fext);
+   /*     strcpy(strstr(fout1, EXTENSION), fext);
         strcpy(strstr(fout2, EXTENSION), fext);
         strcpy(strstr(foutn, EXTENSION), fext);
-	strcpy(strstr(fintp, EXTENSION), fext);
+	strcpy(strstr(fintp, EXTENSION), fext);*/
+   strcat(fout1, fext);
+   strcat(fout2, fext);
+   strcat(foutn, fext);
+   strcat(fintp, fext);
      }
 
      alat = gr->alat;
@@ -880,7 +884,8 @@ struct frame_objs *threshold(FILE *fdatin, int reo, int sn)
       if(!fexist(tavin, "r")){
 
          strncpy(tavin, TAVGE, MAXCHR);
-         if(iext) strcpy(strstr(tavin, EXTENSION), fext);
+         /*if(iext) strcpy(strstr(tavin, EXTENSION), fext);*/
+         if(iext) strcat(tavin, fext);
          if(fexist(tavin, "r")){ 
 
             printf("***WARNING***, the time average file %s exists    \r\n"

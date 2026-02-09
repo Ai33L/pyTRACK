@@ -114,9 +114,12 @@ struct track_ind *mge_tracks(struct frame_objs *fo, int frame_num)
     strncpy(fout3, TDUMP, MAXCHR);
 
     if(iext){
-        strcpy(strstr(fout1, EXTENSION), fext);
+        /*strcpy(strstr(fout1, EXTENSION), fext);
         strcpy(strstr(fout2, EXTENSION), fext);
-        strcpy(strstr(fout3, EXTENSION), fext);
+        strcpy(strstr(fout3, EXTENSION), fext);*/
+        strcat(fout1, fext);
+        strcat(fout2, fext);
+        strcat(fout3, fext);
     }
 
     mnpt = 0;

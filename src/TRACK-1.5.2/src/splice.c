@@ -61,10 +61,9 @@ extern int iext;
 extern int nfld, nf;
 extern int *nfwpos;
 
-struct tot_tr *splice(int *trackn)
-
-{
-
+struct tot_tr *splice_tracks(int *trackn)
+{  
+   
     int izm, mnpt, mxpt, ff=0;
     int i, j, k, tt=0;
     int tot_fet=0, tr_count=0;
@@ -135,7 +134,8 @@ reread:
 
 /* read combined data from file */
         strncpy(charin, FPTTRS, MAXCHR);
-        if(iext) strcpy(strstr(charin, EXTENSION), fext);
+        /*if(iext) strcpy(strstr(charin, EXTENSION), fext);*/
+        if(iext) strcat(charin, fext);
 
        printf("Do you want to use a track file different from the default, 'y' or 'n'.\n\n");
        scanf("\n");
@@ -561,7 +561,8 @@ retry:
 /* write combined data to file */
 
     strncpy(trout, FPTTRS, MAXCHR);
-    if(iext) strcpy(strstr(trout, EXTENSION), fext);
+    /*if(iext) strcpy(strstr(trout, EXTENSION), fext);*/
+    if(iext) strcat(trout, fext);
 
     tsf = open_file(trout, "w");
 
@@ -975,7 +976,8 @@ plot:
 /* write filtered data to file */
 
     strncpy(trout, FILTRS, MAXCHR);
-    if(iext) strcpy(strstr(trout, EXTENSION), fext);
+    /*if(iext) strcpy(strstr(trout, EXTENSION), fext);*/
+    if(iext) strcat(trout, fext);
 
     tsf = open_file(trout, "w");
 
@@ -1044,7 +1046,8 @@ plot:
        }
 
        strncpy(grtrs, GRTRS, MAXCHR);
-       if(iext) strcpy(strstr(grtrs, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(grtrs, EXTENSION), fext);*/
+       if(iext) strcat(grtrs, fext);
 
        tsf = open_file(grtrs, "w");
 

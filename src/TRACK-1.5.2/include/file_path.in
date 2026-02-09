@@ -4,10 +4,11 @@
 
 #define Str(a)         # a              /* make a string              */
 #define Add(b, c, d)   "" /*Str(b/c/d) string concatenation macro */
+#define Addtwo(b, c)   Str(b/c) /*string concatenation macro */
 
 #define  USER       ""    /* /users/nutis/kih                  */
 
-#define  PATHI      "" /*S_TRACK/indat */
-#define  PATHO      "" /*S_TRACK/outdat */
-#define  DATPATH    "" /*S_TRACK/data */
-#define  SPPATH     "" /*S_TRACK/spectral */
+#define  PATHI      getenv("PATHI")
+#define  PATHO      getenv("PATHO")
+#define  DATPATH    getenv("DATPATH")
+#define  SPPATH     getenv("SPPATH")
