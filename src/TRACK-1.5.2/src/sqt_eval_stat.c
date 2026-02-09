@@ -16,7 +16,7 @@ int kernel_insqt(LEAF * , VEC * , struct dpt * , double );
 LEAF **sqt_leaf_sample(LEAF ** , struct dpt * , LEAF * , VEC * , double , int * , int * , int );
 double tele_kernel(double , double , double , int );
 
-double sqt_eval_stat(double *plt, double **den, struct dpt *st, struct dpt *dt, float *wght, int dtn, int ptnum, int im, int ht, int ind, int ms, LEAF *lf, VEC *gv, int nlf, int sqt_c, TELE *tele)
+double sqt_eval_stat(double *plt, double **den, struct dpt *st, struct dpt *dt, float *wght, int dtn, int ptnum, int im, int ht, int ind, int ms, LEAF *lf, VEC *gv, int nlf, int sqt_c, TELE *tele, int ilffre)
 
 {
 
@@ -116,7 +116,7 @@ double sqt_eval_stat(double *plt, double **den, struct dpt *st, struct dpt *dt, 
 
          cn *= tsm;
 
-         cd = 1.0 - tsm;
+         cd = tsm - 1.0;
 
          con = cn / pow(cd, ipp);
          sang = sin(acos(1.0 / tsm));
@@ -134,6 +134,7 @@ double sqt_eval_stat(double *plt, double **den, struct dpt *st, struct dpt *dt, 
 
 
 /* initialize arrays */
+
 
     if(im > 1){
 
@@ -310,10 +311,12 @@ double sqt_eval_stat(double *plt, double **den, struct dpt *st, struct dpt *dt, 
     free(dent);
     free(lnf);
 
-    for(i=0; i < nlf; i++) {
-        lff = lf + i;
-        free(lff->ldata);
-        lff->ndata = 0;
+    if(ilffre){
+       for(i=0; i < nlf; i++) {
+           lff = lf + i;
+           free(lff->ldata);
+           lff->ndata = 0;
+       }
     }
 
     return nn;

@@ -77,7 +77,7 @@ double non_iso_adapt(struct dpt * , int , double , double * , float * , struct c
 void regfal(double * , double * , double);
 
 
-float sp_kernal_estimate(double **den, struct dpt *st, struct dpt *dt, float *wght, int dtn, int ptnum, int im, int *kty, int ims, float *nn, LEAF *lf, VEC *gv, int nlf, int ninfo, TELE *tele)
+float sp_kernal_estimate(double **den, struct dpt *st, struct dpt *dt, float *wght, int dtn, int ptnum, int im, int *kty, int ims, float *nn, LEAF *lf, VEC *gv, int nlf, int ninfo, TELE *tele, int ilffre)
 
 {
 
@@ -342,7 +342,7 @@ float sp_kernal_estimate(double **den, struct dpt *st, struct dpt *dt, float *wg
 
        if(lf)
 
-         *nn = (*eval_sample_stat)(&tsm, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele);
+         *nn = (*eval_sample_stat)(&tsm, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele, ilffre);
 
        else
  
@@ -369,7 +369,7 @@ float sp_kernal_estimate(double **den, struct dpt *st, struct dpt *dt, float *wg
 
         if(lf)
 
-           *nn = (*eval_sample_stat)(&tsm, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele);
+           *nn = (*eval_sample_stat)(&tsm, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele, ilffre);
 
         else 
 
@@ -536,7 +536,7 @@ float sp_kernal_estimate(double **den, struct dpt *st, struct dpt *dt, float *wg
 
            if(lf)
 
-              *nn = (*eval_sample_stat)(plt, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele);
+              *nn = (*eval_sample_stat)(plt, den, st, dt, wght, dtn, ptnum, im, ht, ind, ms, lf, gv, nlf, sqt_c, tele, ilffre);
 
            else
 

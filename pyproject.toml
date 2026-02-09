@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "TRACK-pylib"
 version = "0.1.0"
-description = "Python wrapper for the TRACK tracking system"
+description = "Python-wrapped implementation of the TRACK software"
 authors = [
     { name = "Abel Shibu", email = "abels2000@gmail.com" }
 ]

@@ -36,7 +36,7 @@
 /* function to compute the propogation speeds and frequencies of the
    trajectories and statistics.                                      */
 
-float sp_kernal_estimate(double ** , struct dpt * , struct dpt * , float * , int , int , int , int * , int , float * , LEAF * , VEC * , int , int , TELE * );
+float sp_kernal_estimate(double ** , struct dpt * , struct dpt * , float * , int , int , int , int * , int , float * , LEAF * , VEC * , int , int , TELE * , int );
 void meantrd(FILE * , struct tot_tr * , int , int );
 void plot_stats(struct tot_stat * , int , int , int );
 int powi(int , int );
@@ -1558,7 +1558,7 @@ printf("\n");*/
 
       if(getchar() == 's'){
 
-         trsav->sm[0] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 2, &(trsav->kern[0]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[0] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 2, &(trsav->kern[0]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
          trsav->sm[4] = trsav->sm[1] = trsav->sm[0];
          trsav->kern[4] = trsav->kern[1] = trsav->kern[0];
 
@@ -1578,7 +1578,7 @@ printf("\n");*/
 
          printf("***INFORMATION***, performing PHENOMENA density estimation\n\n");
 
-         trsav->sm[4] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 1, &(trsav->kern[4]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[4] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 1, &(trsav->kern[4]), 0, &nn, lf, gvecs, nelm, 1, tele, 0);
 
          for(i=0; i < trsav->ptnum; i++){
 
@@ -1591,7 +1591,7 @@ printf("\n");*/
 
          printf("***INFORMATION***, performing MEAN STRENGTH estimation\n\n");
 
-         trsav->sm[0] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 0, &(trsav->kern[0]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[0] = sp_kernal_estimate(den, stat, dtr, wdtr, dtrn, trsav->ptnum, 0, &(trsav->kern[0]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
          trsav->sm[1] = trsav->sm[0];
          trsav->kern[1] = trsav->kern[0];
 
@@ -1637,7 +1637,7 @@ printf("\n");*/
       if(getchar() == 's'){
 
 
-         trsav->sm[2] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, 3, &(trsav->kern[2]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[2] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, 3, &(trsav->kern[2]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
          trsav->sm[8] = trsav->sm[3] = trsav->sm[2];
          trsav->kern[8] = trsav->kern[3] = trsav->kern[2];
 
@@ -1662,7 +1662,7 @@ printf("\n");*/
          printf("***INFORMATION***, performing MEAN SPEED estimation.\n\n");
 
 
-         trsav->sm[2] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, 0, &(trsav->kern[2]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[2] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, 0, &(trsav->kern[2]), 0, &nn, lf, gvecs, nelm, 1, tele, 0);
          trsav->sm[3] = trsav->sm[2];
          trsav->kern[3] = trsav->kern[2];
 
@@ -1680,7 +1680,7 @@ printf("\n");*/
 
          printf("***INFORMATION***, performing TRACK FLUX estimation\n\n");
 
-         trsav->sm[8] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, -1, &(trsav->kern[8]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[8] = sp_kernal_estimate(den, stat, dph, wdph, dphn, trsav->ptnum, -1, &(trsav->kern[8]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
 
          for(i=0; i < trsav->ptnum; i++){
 
@@ -1719,7 +1719,7 @@ printf("\n");*/
       scanf("\n");
       if(getchar() == 's'){
 
-         trsav->sm[11] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, 3, &(trsav->kern[11]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[11] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, 3, &(trsav->kern[11]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
          trsav->sm[12] = trsav->sm[11];
          trsav->kern[12] = trsav->kern[11];
 
@@ -1742,7 +1742,7 @@ printf("\n");*/
 
          printf("***INFORMATION***, performing MEAN ANISOTROPY estimation.\n\n");
 
-         trsav->sm[11] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, 0, &(trsav->kern[11]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[11] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, 0, &(trsav->kern[11]), 0, &nn, lf, gvecs, nelm, 1, tele, 0);
 
          for(i=0; i < trsav->ptnum; i++){
 
@@ -1758,7 +1758,7 @@ printf("\n");*/
 
          printf("***INFORMATION***, performing MEAN ORIENTATION estimation\n\n");
 
-         trsav->sm[12] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, -1, &(trsav->kern[12]), 0, &nn, lf, gvecs, nelm, 1, tele);
+         trsav->sm[12] = sp_kernal_estimate(den, stat, dan, wdan, dann, trsav->ptnum, -1, &(trsav->kern[12]), 0, &nn, lf, gvecs, nelm, 1, tele, 1); 
 
          for(i=0; i < trsav->ptnum; i++){
 
@@ -1783,10 +1783,37 @@ printf("\n");*/
       free(dan);
       free(wdan);
 
-
-
       free(den[4]);
       free(den[3]);
+
+/* compute mean area */
+
+      printf("***INFORMATION***, performing mean area estimation.\n\n");
+
+      nn = 0;
+
+      if(isamp && dgrn) data_partition(sqth, gvecs, nfc, nlev, 1, dar, darn);
+
+      trsav->sm[14] = sp_kernal_estimate(den, stat, dar, wdar, darn, trsav->ptnum, 0, &(trsav->kern[14]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
+
+      for(i=0; i < trsav->ptnum; i++){
+
+         pst = trsav->ptst + i;
+
+         pst->stat13 = *(den[1] + i);
+
+         *(den[0] + i) = *(den[1] + i) = 0.0;
+
+      }
+
+
+      if(wdar) nn /= sum_wt;
+
+      trsav->datnm[14] = nn;
+
+      free(dar);
+      free(wdar);
+      
 
 /* compute growth/decay rates */
 
@@ -1797,7 +1824,7 @@ printf("\n");*/
 
       if(isamp && dgrn) data_partition(sqth, gvecs, nfc, nlev, 1, dgr, dgrn);
 
-      trsav->sm[10] = sp_kernal_estimate(den, stat, dgr, wdgr, dgrn, trsav->ptnum, 0, &(trsav->kern[10]), 0, &nn, lf, gvecs, nelm, 1, tele);
+      trsav->sm[10] = sp_kernal_estimate(den, stat, dgr, wdgr, dgrn, trsav->ptnum, 0, &(trsav->kern[10]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
 
       for(i=0; i < trsav->ptnum; i++){
 
@@ -1825,7 +1852,7 @@ printf("\n");*/
 
       if(isamp && dtnn) data_partition(sqth, gvecs, nfc, nlev, 1, dtn, dtnn);
 
-      trsav->sm[13] = sp_kernal_estimate(den, stat, dtn, wdtn, dtnn, trsav->ptnum, 0, &(trsav->kern[13]), 0, &nn, lf, gvecs, nelm, 1, tele);
+      trsav->sm[13] = sp_kernal_estimate(den, stat, dtn, wdtn, dtnn, trsav->ptnum, 0, &(trsav->kern[13]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
 
       for(i=0; i < trsav->ptnum; i++){
 
@@ -1853,7 +1880,7 @@ printf("\n");*/
 
       if(isamp && dgnn) data_partition(sqth, gvecs, nfc, nlev, 1, dgn, dgnn);
 
-      trsav->sm[5] = sp_kernal_estimate(den, stat, dgn, wdgn, dgnn, trsav->ptnum, 1, &(trsav->kern[5]), 0, &nn, lf, gvecs, nelm, 1, tele);
+      trsav->sm[5] = sp_kernal_estimate(den, stat, dgn, wdgn, dgnn, trsav->ptnum, 1, &(trsav->kern[5]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
 
 
       for(i=0; i < trsav->ptnum; i++){
@@ -1877,7 +1904,7 @@ printf("\n");*/
 
       if(isamp && dlyn) data_partition(sqth, gvecs, nfc, nlev, 1, dly, dlyn);
 
-      trsav->sm[6] = sp_kernal_estimate(den, stat, dly, wdly, dlyn, trsav->ptnum, 1, &(trsav->kern[6]), 0, &nn, lf, gvecs, nelm, 1, tele);
+      trsav->sm[6] = sp_kernal_estimate(den, stat, dly, wdly, dlyn, trsav->ptnum, 1, &(trsav->kern[6]), 0, &nn, lf, gvecs, nelm, 1, tele, 1);
 
 
       for(i=0; i < trsav->ptnum; i++) {
@@ -1991,7 +2018,7 @@ printf("\n");*/
                  data_partition(sqth, gvecs, nfc, nlev, 0, stt, 1);
                  data_partition(sqth, gvecs, nfc, nlev, 1, dtd, dtdn);
               }
-              trsav->sm[7] = sp_kernal_estimate(den, stt, dtd, wdtd, dtdn, 1, 2, &(trsav->kern[7]), 1, &nn, lf, gvecs, nelm, 0, tele);
+              trsav->sm[7] = sp_kernal_estimate(den, stt, dtd, wdtd, dtdn, 1, 2, &(trsav->kern[7]), 1, &nn, lf, gvecs, nelm, 0, tele, 1);
               trsav->sm[9] = trsav->sm[7];
               trsav->kern[9] = trsav->kern[7];
           
@@ -2624,7 +2651,7 @@ void available_stats(void)
            " '5',  growth/decay rate                                 \r\n"
            " '6',  feature anistropy and orientation                 \r\n"
            " '7',  tendency                                          \r\n"
-           " '8',  mean area (currently not active).                 \r\n"
+           " '8',  mean area.                                        \r\n"
            "Input '0' to finish selection. Statistics not selected   \r\n"
            "will be computed.                                        \n\n");
 
