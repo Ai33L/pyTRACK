@@ -22,3 +22,10 @@ track()
 ```
 
 This should start the TRACK namelist.
+
+To get the tracks from an 850hPa u-v wind file, run
+
+```
+from pyTRACK import *
+track_uv(path_to_file)
+```
