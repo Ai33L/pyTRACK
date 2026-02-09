@@ -354,5 +354,3 @@ def track_splice(datin, ext, ntime):
 
     # Compress output directory
     shutil.make_archive(str(DIR3), 'gztar', root_dir=str(DIR3))
-
-
