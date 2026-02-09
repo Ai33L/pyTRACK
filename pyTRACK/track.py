@@ -229,7 +229,7 @@ def track_splice(datin, ext, ntime):
 
         # --- Run TRACK for +ve field ---
         print('starting', N, S, F)
-        track(input_file=DATIN, namelist=fileA)
+        track(input_file=DATIN, ext=ext, namelist=fileA)
 
 
         # Move output files to DJF_MAX
@@ -244,7 +244,7 @@ def track_splice(datin, ext, ntime):
         fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run, flag=True))
         # --- Run TRACK for -ve field ---
         print('starting - ', N)
-        track(input_file=DATIN, namelist=fileB)
+        track(input_file=DATIN, ext=ext, namelist=fileB)
 
         # Move output files to DJF_MIN
         print('moving - ', N)
@@ -286,10 +286,7 @@ def track_splice(datin, ext, ntime):
     # Splice mode
     # ------------------------------
 
-    import re
-    from pathlib import Path
-
-    def run_splice(splice_file, out_prefix):
+    def run_splice(splice_file, out_prefix, ext):
         temp_file = ODAT / f"RSPLICE.temp.{out_prefix}"
         rsplice = ODAT / f"RSPLICE.{out_prefix}"
 
@@ -314,7 +311,7 @@ def track_splice(datin, ext, ntime):
         splice_file.unlink()
 
         # Run track in splice mode
-        track(input_file=DATIN, namelist=rsplice)
+        track(input_file=DATIN, ext=ext, namelist=rsplice)
 
         # Move outputs
 
@@ -336,8 +333,8 @@ def track_splice(datin, ext, ntime):
 
 
     # Run splice for positive and negative
-    run_splice(ODAT / f"splice_max.{EXT}", "pos")
-    run_splice(ODAT / f"splice_min.{EXT}", "neg")
+    run_splice(ODAT / f"splice_max.{EXT}", "pos", ext=ext)
+    run_splice(ODAT / f"splice_min.{EXT}", "neg", ext=ext)
 
     # ------------------------------
     # Final cleanup

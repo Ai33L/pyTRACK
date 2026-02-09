@@ -135,24 +135,6 @@ def track_uv(infile,
         os.system("mv "+ "specfil_band001."+ext+"_band001 " + fname)
 
         track_splice(fname, ext, ntime)
-        
-        # line_4 = "master -c=" + c_input + " -e=track.linux -d=now -i=" + \
-        #     fname + " -f=y" + year + \
-        #     " -j=RUN_AT.in -k=initial.T42_" + hemisphere + \
-        #     " -n=1,62," + \
-        #     str(nchunks) + " -o='" + outdir + \
-        #     "' -r=RUN_AT_ -s=RUNDATIN.VOR"
-
-    #     # executing the lines to run TRACK
-    #     print("Spectral filtering...")
-    #     # os.system(line_1)
-    #     # os.system(line_2)
-    #     # os.system(line_3)
-
-    #     # print("Running TRACK...")
-    #     # os.system(line_4)
-
-    #     print("Turning track output to netCDF...")
 
     #     ### extract start date and time from data file
     #     filename="indat/"+year_file
@@ -184,17 +166,6 @@ def track_uv(infile,
     #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_pos", timestring, datetime, timedelta)
     #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_neg", timestring, datetime, timedelta)
 
-    #     ### cleanup fortran files ###########################
-
-    #     if True: ## Change to false to keep files for debugging
-    #         os.system("rm outdat/specfil*")
-    #         os.system("rm outdat/ff_trs*")
-    #         os.system("rm outdat/tr_trs*")
-    #         os.system("rm outdat/interp_*")
-    #         os.system("rm indat/"+year_file)
-    #         os.system("rm indat/"+fname)
-    #         os.system("rm indat/"+vor850_name)
-    #     # os.system("rm indat/calcvor_onelev_" + ext + ".in")
     
     return
 
