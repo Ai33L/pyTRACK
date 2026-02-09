@@ -2,7 +2,13 @@
 
 This is a python-wrapped implementation of the TRACK software.
 
-To install, git clone this repository and from its base folder, run
+To install, simply run 
+
+```
+pip install track-pylib
+```
+
+or git clone this repository and from its base folder run
 
 ```
 pip install -e .
