@@ -10,7 +10,6 @@ try:
     cdo = Cdo()
 except Exception as e:
     cdo = None
-    print("WARNING: CDO not available — CDO-dependent functionality will be disabled.")
 
 __all__ = ['track_uv', 'calc_vorticity']
 
