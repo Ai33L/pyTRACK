@@ -1,5 +1,4 @@
-=========================
-|TRACK-pylib| documentation
+TRACK-pylib documentation
 =========================
 
 This is the documentation for TRACK-pylib, a python-wrapped implementation of the
