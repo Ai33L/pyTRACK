@@ -3,6 +3,7 @@
 TARBALL := TRACK-1.5.2.tar.bz2
 SRC_DIR := TRACK-1.5.2
 LIBNAME := libtrack.so
+LIBUTILSNAME := libtrackutils.so
 
 # Tools
 CC := gcc
@@ -33,7 +34,12 @@ $(LIBNAME): untar build_objects
 	    lib/FFT/*.o \
 	    lib/chisqr.src/*.o \
 	    -lnetcdf
+	cd $(SRC_DIR) && \
+	gfortran -shared -fPIC -o $(LIBUTILSNAME) \
+	    utils/TR2NC/*.o \
+	    -lnetcdf
 	cp $(SRC_DIR)/$(LIBNAME) .
+	cp $(SRC_DIR)/$(LIBUTILSNAME) .
 
 # ===== Untar legacy source =====
 
@@ -52,6 +58,8 @@ untar:
 build_objects:
 	cd $(SRC_DIR) && \
 	master -build -i=linux -f=linux
+	cd $(SRC_DIR) && \
+	make utils
 
 # ===== Clean =====
 

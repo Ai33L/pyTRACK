@@ -8,7 +8,7 @@ OBJECTS=$(SOURCES:.c=.o)
 
 #CFLAGS = -g -Xa -xsb -I../../include
 
-CFLAGS = -g -ansi -Wall -I../../include -D${SYSTEM} $(AD_C_FLAGS)
+CFLAGS = -g -fPIC -ansi -Wall -I../../include -D${SYSTEM} $(AD_C_FLAGS)
 
 LIBS = -lm
 

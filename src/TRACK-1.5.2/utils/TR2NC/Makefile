@@ -11,7 +11,7 @@ OBJECT=tr2nc.o read_tracks.o write_track_netcdf.o new_time.o julian.o
 
 #CFLAGS = -g -Xa -xsb
 
-CFLAGS = -g -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) 
+CFLAGS = -g -fPIC -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) 
 
 LIBS = -lm ${ADLIBS}
 

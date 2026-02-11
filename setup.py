@@ -33,7 +33,10 @@ class BuildTRACK(build_py):
         lib_dst = os.path.join(root, "pyTRACK", "_lib")
         os.makedirs(lib_dst, exist_ok=True)
         shutil.copy(lib_src, lib_dst)
-        print(f"libtrack.so copied to {lib_dst}")
+        lib_src = os.path.join(track_src, "libtrackutils.so")
+        lib_dst = os.path.join(root, "pyTRACK", "_lib")
+        shutil.copy(lib_src, lib_dst)
+        print(f"libtrack.so and libtrackutils.so copied to {lib_dst}")
 
 setup(
     name="pyTRACK",
