@@ -3,4 +3,4 @@ Installation
 
 Install via pip:
 
-pip install pyTRACK
+pip install track-pylib
