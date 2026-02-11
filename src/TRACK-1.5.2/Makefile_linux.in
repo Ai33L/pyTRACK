@@ -63,10 +63,6 @@ ADLIBS = -L$(LOCALLIB) -lchisqr -lopt -lsmp -lfft $(NETLIB)
 ADDINCS = $(NETINC)
 LIB_ADDINCS =
 
-ADDINCS ?= $(shell nf-config --fflags)
-ADLIBS  ?= $(shell nf-config --flibs)
-
-
 #
 # gcc libs
 #
@@ -173,12 +169,7 @@ CONDOR_COMPILE: SRC FORCE
 	rm -f *%
 
 utils: FORCE
-	cd utils; make SYSTEM='${SYSTEM}' \
-	    CC='${CC}' \
-	    HAVNETC='${HAVE_NETCDF}' \
-	    ADDINCS='${ADDINCS}' \
-	    ADLIBS='${ADLIBS}' \
-	    AD_C_FLAGS='$(AD_C_FLAGS)'
+	cd utils; make -e SYSTEM='${SYSTEM}' CC='${CC}' HAVNETC='${HAVE_NETCDF}' ADDINCS='${NETINC}' ADLIBS='${NETLIB}' AD_C_FLAGS='$(AD_C_FLAGS)'
 
 depend: depend_src depend_libs
 

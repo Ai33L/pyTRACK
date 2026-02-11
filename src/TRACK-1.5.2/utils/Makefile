@@ -2,7 +2,7 @@
 
 WORKING_JAVA := $(shell which javac)
 
-all: symlinks bfilt combine convolve count diffstat ensemble hart java ibtref landfall lifecycle mident sample split tc tele_weights tilt transadd trtrans tr2kml tr2nc tr2pgsl runs
+all: bfilt combine convolve count diffstat ensemble hart java ibtref landfall lifecycle mident sample split tc tele_weights tilt transadd trtrans tr2kml tr2nc tr2pgsl runs
 
 symlinks: FORCE
 	test -d bin || mkdir bin
