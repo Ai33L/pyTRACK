@@ -1,8 +1,22 @@
 TRACK-pylib documentation
 =========================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+Introduction
+------------
 
-   pyTRACK
+pyTRACK is a Python library for running TRACK simulations.
+
+Installation
+------------
+
+Install via pip:
+
+pip install pyTRACK
+
+Functions
+---------
+
+.. automodule:: pyTRACK
+   :members:
+   :undoc-members:
+   :show-inheritance:
