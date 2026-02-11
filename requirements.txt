@@ -1,0 +1,5 @@
+sphinx>=7.0
+sphinx.ext.napoleon
+sphinx_rtd_theme
+sphinx-autosummary
+Pygments
