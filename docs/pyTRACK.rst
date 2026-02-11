@@ -1,5 +1,5 @@
-pyTRACK package
-===============
+pyTRACK
+=======
 
 .. automodule:: pyTRACK
    :members:

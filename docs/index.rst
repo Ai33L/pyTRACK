@@ -1,15 +1,5 @@
-.. TRACK-pylib documentation master file, created by
-   sphinx-quickstart on Wed Feb 11 13:51:23 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 TRACK-pylib documentation
 =========================
-
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
 
 .. toctree::
    :maxdepth: 2
