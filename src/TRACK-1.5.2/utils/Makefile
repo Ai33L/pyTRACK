@@ -2,7 +2,7 @@
 
 WORKING_JAVA := $(shell which javac)
 
-all: tr2nc 
+all: pywrapped 
 
 symlinks: FORCE
 	test -d bin || mkdir bin
@@ -68,7 +68,7 @@ tr2kml: FORCE
 	cd TR2KML; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)'
 	
 tr2nc: FORCE
-	cd TR2NC; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)' HAVNETC='NETCDF' ADDINCS='${ADDINCS}' ADLIBS='${ADLIBS}'
+	cd PYWRAPPED; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)' HAVNETC='NETCDF' ADDINCS='${ADDINCS}' ADLIBS='${ADLIBS}'
 	
 tr2pgsl: FORCE
 	cd TR2PGSL; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)'
