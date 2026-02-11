@@ -1,10 +1,13 @@
+=========================
 TRACK-pylib documentation
 =========================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+This is the documentation for TRACK-pylib, a python-wrapped implementation of the
+`TRACK <https://gitlab.act.reading.ac.uk/track/track>` software.
 
-   Introduction
-   installation
-   functions
+
+.. toctree::
+    :titlesonly:
+
+    installation
+    functions
