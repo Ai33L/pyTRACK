@@ -13,6 +13,9 @@ build:
 python:
   install:
     - method: pip
+      packages:
+        - sphinx_rtd_theme
+    - method: pip
       path: .   # installs your package from pyproject.toml
 
 sphinx:

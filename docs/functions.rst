@@ -1,3 +1,6 @@
+Functions
+=========
+
 .. automodule:: pyTRACK
    :members:
    :undoc-members:
