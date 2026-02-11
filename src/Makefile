@@ -36,7 +36,7 @@ $(LIBNAME): untar build_objects
 	    -lnetcdf
 	cd $(SRC_DIR) && \
 	gfortran -shared -fPIC -o $(LIBUTILSNAME) \
-	    utils/TR2NC/*.o \
+	    utils/PYWRAPPED/*.o \
 	    -lnetcdf
 	cp $(SRC_DIR)/$(LIBNAME) .
 	cp $(SRC_DIR)/$(LIBUTILSNAME) .
