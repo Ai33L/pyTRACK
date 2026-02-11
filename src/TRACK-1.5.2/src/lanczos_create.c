@@ -45,8 +45,10 @@ double **lanczos_create(int *nfilt, int *order, int *tsamp)
     strncpy(lancr, LANCZOS_RESP, MAXCHR);
     strncpy(lancw, LANCZOS_W, MAXCHR);
     if(iext) {
-       strcpy(strstr(lancr, EXTENSION), fext);
-       strcpy(strstr(lancw, EXTENSION), fext);
+       /*strcpy(strstr(lancr, EXTENSION), fext);
+       strcpy(strstr(lancw, EXTENSION), fext);*/
+       strcat(lancr, fext);
+       strcat(lancw, fext);
     }
 
     printf("What is the number of data samples per time unit (e.g. day) for period?\n\n");

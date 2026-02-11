@@ -469,7 +469,8 @@ void limited_area_filter(FILE *fdat, int fr1, int fri, int frl)
    for(i=0; i < nband; i++){
        sprintf(band_id, "_band%03d", i);
        strncpy(filename[i], SPECTRAL, MAXCHR);
-       if(iext) strcpy(strstr(filename[i], EXTENSION), fext);
+       /*if(iext) strcpy(strstr(filename[i], EXTENSION), fext);*/
+       if(iext) strcat(filename[i], fext);
        strcat(filename[i], band_id);
 
        filspec[i] = open_file(filename[i], "w");

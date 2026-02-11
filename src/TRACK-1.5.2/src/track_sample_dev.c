@@ -145,7 +145,8 @@ void track_sample_dev(struct tot_tr* trs, int trnum)
       }
 
       strncpy(trout, FPTTRS, MAXCHR);
-      if(iext) strcpy(strstr(trout, EXTENSION), fext);
+      /*if(iext) strcpy(strstr(trout, EXTENSION), fext);*/
+      if(iext) strcat(trout, fext);
       strncat(trout, "_filt", MAXCHR);
    }
 

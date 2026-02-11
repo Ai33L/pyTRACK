@@ -33,9 +33,9 @@ void write_kml_track(FILE * , struct tot_tr * , int );
 void write_kml_tracks(FILE * , struct tot_tr * , int );
 void process_tracks(FILE * , char * );
 
-int aniso;
-int nff, nfld;
-int *nfwpos;
+extern int aniso;
+extern int nff, nfld;
+extern int *nfwpos;
 
 int main(int argc, char **argv)
 {

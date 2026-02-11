@@ -91,7 +91,8 @@ void spline_smooth(FILE *fin)
    struct savedat_sphy *ssd=NULL;   /* data structure for use with sphery   */
 
    strncpy(smooth, SMOOTH, MAXCHR);
-   if(iext) strcpy(strstr(smooth, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(smooth, EXTENSION), fext);*/
+   if(iext) strcat(smooth, fext);
 
    ap=(float *)calloc(gr->ix * gr->iy, sizeof(float));
    mem_er((ap == NULL) ? 0: 1, gr->ix * gr->iy * sizeof(float));     

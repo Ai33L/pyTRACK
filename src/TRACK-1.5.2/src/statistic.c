@@ -236,9 +236,12 @@ void statistic(struct tot_tr *all_tr, int trackn)
    strncpy(statss, STATTRS_SCL, MAXCHR);
    
    if(iext){
-      strcpy(strstr(phasef, EXTENSION), fext);
+      /*strcpy(strstr(phasef, EXTENSION), fext);
       strcpy(strstr(statsf, EXTENSION), fext);
-      strcpy(strstr(statss, EXTENSION), fext);
+      strcpy(strstr(statss, EXTENSION), fext);*/
+      strcat(phasef, fext);
+      strcat(statsf, fext);
+      strcat(statss, fext);
    }
 
 
@@ -985,12 +988,14 @@ void statistic(struct tot_tr *all_tr, int trackn)
       scanf("%f", &ts);
 
       strncpy(charin, INITTRS, MAXCHR);
-      if(iext) strcpy(strstr(charin, EXTENSION), fext);
+      /*if(iext) strcpy(strstr(charin, EXTENSION), fext);*/
+      if(iext) strcat(charin, fext);
 
       gend = open_file(charin, "w");
 
       strncpy(charin, DISPTRS, MAXCHR);
-      if(iext) strcpy(strstr(charin, EXTENSION), fext);
+      /*if(iext) strcpy(strstr(charin, EXTENSION), fext);*/
+      if(iext) strcat(charin, fext);
 
       lysd = open_file(charin, "w");
 
@@ -2314,7 +2319,8 @@ printf("\n");*/
             mem_er((tinit == NULL) ? 0 : 1, sizeof(struct tot_tr));
 
             strncpy(charin, INITTRS, MAXCHR);
-            if(iext) strcpy(strstr(charin, EXTENSION), fext);
+            /*if(iext) strcpy(strstr(charin, EXTENSION), fext);*/
+            if(iext) strcat(charin, fext);
 
             if(!fexist(charin, "r")){
 
@@ -2347,7 +2353,8 @@ printf("\n");*/
 
 
             strncpy(charin, DISPTRS, MAXCHR);
-            if(iext) strcpy(strstr(charin, EXTENSION), fext);
+            /*if(iext) strcpy(strstr(charin, EXTENSION), fext);*/
+            if(iext) strcat(charin, fext);
 
             if(!fexist(charin, "r")){
 
