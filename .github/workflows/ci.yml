@@ -27,7 +27,7 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y gfortran gcc libnetcdf-dev libnetcdf-fortran-dev build-essential
+          sudo apt-get install -y gfortran gcc libnetcdf-dev libnetcdff-dev build-essential
 
       - name: Upgrade pip and install build tools
         run: |
