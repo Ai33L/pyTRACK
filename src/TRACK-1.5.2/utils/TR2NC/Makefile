@@ -18,11 +18,9 @@ LIBS = -lm ${ADLIBS}
 
 .KEEP_STATE:
 
-all: tr2nc
+.PHONY: all
+all: $(OBJECTS)
+	@echo "All object files built."
 
-tr2nc: ${OBJECTS}
-
-
-
-
-
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
