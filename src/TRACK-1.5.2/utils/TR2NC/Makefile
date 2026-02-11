@@ -21,7 +21,6 @@ LIBS = -lm ${ADLIBS}
 all: tr2nc
 
 tr2nc: ${OBJECTS}
-	$(CC) $(CFLAGS) -o ../bin/$@ $(OBJECT) $(LIBS)
 
 
 
