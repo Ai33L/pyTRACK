@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'TRACK-pylib'
+html_title = "TRACK-pylib"
 author = 'Abel Shibu'
 copyright = '2026'
 
