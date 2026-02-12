@@ -10,6 +10,7 @@ try:
 except Exception as e:
     cdo = None
     print("WARNING: CDO not available — CDO-dependent functionality will be disabled.")
+    print("If on a conda env, conda install python-cdo to resolve this")
 
 class data_indat(object):
     """Class to obtain basic information about the CMIP6/ERA input data."""

@@ -1,15 +1,20 @@
 
 def track(input_file="input.nc", ext='_ext', namelist=None):
     """
-    Run TRACK.
+    Runs TRACK.
 
     Parameters
     ----------
     input_file : str
-        Name of the input file (passed with -i).
+        Name of the input file.
+    ext : str
+        Extension to append to the TRACK output files.
     namelist : str or None
-        Path to the namelist file to feed to stdin.
-        If None, runs TRACK normally without stdin redirection.
+        The namelist file to be fed to track.
+        This file should have track inputs in the right order in seperate lines.
+
+    Equivalent to bin/track.linux -i {input_file} -f {ext} < namelist
+    If no parameters are passed, then the usual TRACK namelist interface is triggered.
     """
 
     import os
@@ -61,6 +66,18 @@ def track(input_file="input.nc", ext='_ext', namelist=None):
 
 
 def set_track_env():
+    """
+    Automatically called in the track() function.
+    Sets and passes various paths required by TRACK.
+
+    These paths are set and passed onto the previously pre-set paths in the
+    src/TRACK-1.5.2/include/*.in files.
+
+    The input and output paths are set below to the current working directory
+    The input files needed are set to the correct location with respect to the package location
+    Change the paths below if you would like to modify this behaviour
+    """
+
     import os
 
     pkgpath=os.path.dirname(__file__)
