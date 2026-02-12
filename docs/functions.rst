@@ -1,7 +1,8 @@
 Functions
 =========
 
-.. automodule:: pyTRACK
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: pyTRACK.track
+
+.. autofunction:: pyTRACK.set_track_env
+
+.. autofunction:: pyTRACK.track_uv
