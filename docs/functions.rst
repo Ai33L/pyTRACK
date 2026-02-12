@@ -3,4 +3,4 @@ Functions
 
 .. toctree::
 
-   Core
+   core
