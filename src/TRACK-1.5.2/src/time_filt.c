@@ -270,7 +270,8 @@ void time_filt(FILE *fdat, double **weights, int nfilt, int nor, int fr1, int fr
 
        sprintf(band_id, "_band%03d", i);
        strncpy(filename, TIME_FILT, MAXCHR);
-       if(iext) strcpy(strstr(filename, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(filename, EXTENSION), fext);*/
+       if(iext) strcat(filename, fext);
        strcat(filename, band_id);
 
        if(form != 4) ffilt[i] = open_file(filename, "w+");
@@ -516,7 +517,8 @@ void time_filt(FILE *fdat, double **weights, int nfilt, int nor, int fr1, int fr
 
        sprintf(band_id, "_band%03d", i);
        strncpy(filename, TIME_FILT, MAXCHR);
-       if(iext) strcpy(strstr(filename, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(filename, EXTENSION), fext);*/
+       if(iext) strcat(filename, fext);
        strcat(filename, band_id);
        if(form != 4) close_file(ffilt[i], filename);
        else netcdf_close((NETCDF_INFO *)ffilt[i]);

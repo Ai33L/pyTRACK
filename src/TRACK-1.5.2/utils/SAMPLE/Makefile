@@ -27,7 +27,7 @@ OBJECT6=acc.o read_stats.o statdmp.o cnorminv.o malloc_initl.o
 
 #CFLAGS = -g -Xa -xsb -I../../include
 
-CFLAGS = -g -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+CFLAGS = -g -fPIC -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 
 LIBS = -lm ${ADLIBS}
 

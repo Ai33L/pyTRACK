@@ -1,15 +1,20 @@
 
 def track(input_file="input.nc", ext='_ext', namelist=None):
     """
-    Run TRACK.
+    Runs TRACK.
 
     Parameters
     ----------
     input_file : str
-        Name of the input file (passed with -i).
+        Name of the input file.
+    ext : str
+        Extension to append to the TRACK output files.
     namelist : str or None
-        Path to the namelist file to feed to stdin.
-        If None, runs TRACK normally without stdin redirection.
+        The namelist file to be fed to track.
+        This file should have track inputs in the right order in seperate lines.
+
+    Equivalent to bin/track.linux -i {input_file} -f {ext} < namelist
+    If no parameters are passed, then the usual TRACK namelist interface is triggered.
     """
 
     import os
@@ -61,58 +66,71 @@ def track(input_file="input.nc", ext='_ext', namelist=None):
 
 
 def set_track_env():
+    """
+    Automatically called in the track() function.
+    Sets and passes various paths required by TRACK.
+
+    These paths are set and passed onto the previously pre-set paths in the
+    src/TRACK-1.5.2/include/*.in files.
+
+    The input and output paths are set below to the current working directory
+    The input files needed are set to the correct location with respect to the package location
+    Change the paths below if you would like to modify this behaviour
+    """
+
     import os
 
-    pkgpath=os.path.dirname(__file__)
-    curr=os.getcwd()
+    pkgpath=os.path.dirname(__file__) #location of the final package
+    curr=os.getcwd() #current working directory
 
-    ## paths
-    os.environ["PATHI"] = curr
-    os.environ["PATHO"] = curr
-    os.environ["DATPATH"] = os.path.join(pkgpath, "data")
-    os.environ["SPPATH"] = curr
+    ## paths - file_path.in
+    os.environ["PATHI"] = curr #folder of input files
+    os.environ["PATHO"] = curr #folder of output files
+    os.environ["DATPATH"] = os.path.join(pkgpath, "data") #location of the data files
+    os.environ["SPPATH"] = curr #location to save spectral files
 
-    ## input files
-    os.environ["DATIN"] = os.path.join(curr, "input.nc") 
-    os.environ["DTIMAVG"] = os.path.join(curr, "TIME_AVG") ## does not pass correctly!
-    os.environ["FRTIMES"] = os.path.join(curr, "times?") 
-    os.environ["DATCM"] = os.path.join(pkgpath, "data", "CMAP.dat.claire")
-    os.environ["DATZN"] = os.path.join(pkgpath, "data", "zone.dat") 
-    os.environ["DATAD"] = os.path.join(pkgpath, "data", "adapt.dat") 
+    ## input files - files_in.in
+    os.environ["DATIN"] = os.path.join(curr, "input.nc") #input file
+    os.environ["DTIMAVG"] = os.path.join(curr, "TIME_AVG") #input file for time-avg data, does not pass correctly!
+    os.environ["FRTIMES"] = os.path.join(curr, "times") #frame times
+    os.environ["DATCM"] = os.path.join(pkgpath, "data", "CMAP.dat.claire") #country map data
+    os.environ["DATZN"] = os.path.join(pkgpath, "data", "zone.dat") #input zonal dmax
+    os.environ["DATAD"] = os.path.join(pkgpath, "data", "adapt.dat") #input adaptive phimax
 
-    ## out files
-    os.environ["FINIT"] = os.path.join(curr, "initial") 
-    os.environ["DATTHRO"] = os.path.join(curr, "throut") 
-    os.environ["DOUTOBJ"] = os.path.join(curr, "objout") 
+    ## out files - include/files_out.in
+    os.environ["FINIT"] = os.path.join(curr, "initial") #initialization file
+    os.environ["DATTHRO"] = os.path.join(curr, "throut") #output file for thresholded data
+    os.environ["DOUTOBJ"] = os.path.join(curr, "objout") #output files for points which constitute objects
     os.environ["COMOBJ"] = os.path.join(curr, "comb_obj") 
-    os.environ["NEWOBJF"] = os.path.join(curr, "objout.new") 
-    os.environ["TDUMP"] = os.path.join(curr, "tdump") 
-    os.environ["IDUMP"] = os.path.join(curr, "idump") 
-    os.environ["TAVGE"] = os.path.join(curr, "user_tavg") 
-    os.environ["TENDENCY"] = os.path.join(curr, "field_tend")
-    os.environ["SPECTRAL"] = os.path.join(curr, "specfil") 
-    os.environ["LANCZOS_RESP"] = os.path.join(curr, "lanczos_resp") 
-    os.environ["LANCZOS_W"] = os.path.join(curr, "lanczos_w") 
-    os.environ["TIME_FILT"] = os.path.join(curr, "filt_time")
-    os.environ["CONVERT"] = os.path.join(curr, "conv_bin") 
-    os.environ["EXTRACT"] = os.path.join(curr, "extract") 
-    os.environ["SMOOTH"] = os.path.join(curr, "smooth")
-    os.environ["MASK"] = os.path.join(curr, "mask") 
-    os.environ["INTERP_TH"] = os.path.join(curr, "interp_th")
+    os.environ["NEWOBJF"] = os.path.join(curr, "objout.new") #object data output file after feature point filtering 
+    os.environ["TDUMP"] = os.path.join(curr, "tdump") #output file for final track data
+    os.environ["IDUMP"] = os.path.join(curr, "idump") #output file for initial track data
+    os.environ["TAVGE"] = os.path.join(curr, "user_tavg") #time average file
+    os.environ["TENDENCY"] = os.path.join(curr, "field_tend") #tendency file
+    os.environ["SPECTRAL"] = os.path.join(curr, "specfil") #spectraly filtered fields output stub filename
+    os.environ["LANCZOS_RESP"] = os.path.join(curr, "lanczos_resp") #spectral response for Lanczos filtering
+    os.environ["LANCZOS_W"] = os.path.join(curr, "lanczos_w") #Lanczos weights
+    os.environ["TIME_FILT"] = os.path.join(curr, "filt_time") #time domain filtered fields output stub filename
+    os.environ["CONVERT"] = os.path.join(curr, "conv_bin") #data conversion output filename stub 
+    os.environ["EXTRACT"] = os.path.join(curr, "extract") #data extraction output filename stub
+    os.environ["SMOOTH"] = os.path.join(curr, "smooth") #data smoothing output filename stub
+    os.environ["MASK"] = os.path.join(curr, "mask") #data masking output filename stub
+    os.environ["INTERP_TH"] = os.path.join(curr, "interp_th") #data output from threshold on current projection
 
     ## stat out files
-    os.environ["FPTTRS"] = os.path.join(curr, "tr_trs") 
-    os.environ["FILTRS"] = os.path.join(curr, "ff_trs") 
-    os.environ["GRTRS"] = os.path.join(curr, "tr_grid") 
-    os.environ["MNTRS"] = os.path.join(curr, "mean_trs") 
-    os.environ["PHTRS"] = os.path.join(curr, "phase_trs")
-    os.environ["STATTRS"] = os.path.join(curr, "stat_trs")
-    os.environ["STATTRS_SCL"] = os.path.join(curr, "stat_trs_scl")
-    os.environ["STATCOM"] = os.path.join(curr, "stat_com") 
-    os.environ["INITTRS"] = os.path.join(curr, "init_trs") 
-    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs")
+    os.environ["FPTTRS"] = os.path.join(curr, "tr_trs") #spliced output file for track data
+    os.environ["FILTRS"] = os.path.join(curr, "ff_trs") #filtered spliced track file
+    os.environ["GRTRS"] = os.path.join(curr, "tr_grid") #grid point track data
+    os.environ["MNTRS"] = os.path.join(curr, "mean_trs") #mean tracks output file
+    os.environ["PHTRS"] = os.path.join(curr, "phase_trs") #phase speed output file
+    os.environ["STATTRS"] = os.path.join(curr, "stat_trs") #statistics output file
+    os.environ["STATTRS_SCL"] = os.path.join(curr, "stat_trs_scl") #scaled statistics output file
+    os.environ["STATCOM"] = os.path.join(curr, "stat_com") #combined statistics output file
+    os.environ["INITTRS"] = os.path.join(curr, "init_trs") #initiation output file 
+    os.environ["DISPTRS"] = os.path.join(curr, "disp_trs") #disapearance output file
 
-    ## extras
+    ## extras 
+    # - lib/include/constraint.h
     os.environ["CONSDAT"] = os.path.join(pkgpath, "data", "constraints.dat") 
     os.environ["CONSDAT_SMOOPY"] = os.path.join(pkgpath, "data", "constraints.dat.reg") 
     os.environ["CONSDAT_SPHERY"] = os.path.join(pkgpath, "data", "constraints.dat.sphery")

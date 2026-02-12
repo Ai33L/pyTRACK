@@ -46,7 +46,8 @@ void run_means()
    struct pt_stat *st1=NULL, *st2=NULL;
 
    strncpy(soutf, STATCOM, MAXCHR);
-   if(iext) strcpy(strstr(soutf, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(soutf, EXTENSION), fext);*/
+   if(iext) strcat(soutf, fext);
 
 
    printf("How many sets of statistics are to be combined?\n");

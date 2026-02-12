@@ -78,7 +78,8 @@ void tendency(FILE *fdat, int fr1, int frl)
    mem_er((buf2 == NULL) ? 0 : 1, dim * sizeof(float)); 
 
    strncpy(tend, TENDENCY, MAXCHR);
-   if(iext) strcpy(strstr(tend, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(tend, EXTENSION), fext);*/
+   if(iext) strcat(tend, fext);
 
    ftend = open_file(tend, "w");
 

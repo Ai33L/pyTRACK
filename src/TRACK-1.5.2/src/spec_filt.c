@@ -438,7 +438,8 @@ void spec_filt(FILE *fdat, int fr1, int fri, int frl, int nn)
 
        sprintf(band_id, "_band%03d", i);
        strncpy(filename, TIME_FILT, MAXCHR);
-       if(iext) strcpy(strstr(filename, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(filename, EXTENSION), fext);*/
+       if(iext) strcat(filename, fext);
        strcat(filename, band_id);
        if(form != 4) ffilt[i] = open_file(filename, "w+");
        else ffilt[i] = (FILE *)nc_define((NETCDF_INFO *)fdat, filename);
@@ -695,7 +696,8 @@ void spec_filt(FILE *fdat, int fr1, int fri, int frl, int nn)
 
        sprintf(band_id, "_band%03d", i);
        strncpy(filename, TIME_FILT, MAXCHR);
-       if(iext) strcpy(strstr(filename, EXTENSION), fext);
+       /*if(iext) strcpy(strstr(filename, EXTENSION), fext);*/
+       if(iext) strcat(filename, fext);
        strcat(filename, band_id);
        if(form != 4) close_file(ffilt[i], filename);
        else netcdf_close((NETCDF_INFO *)ffilt[i]);

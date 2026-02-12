@@ -47,7 +47,8 @@ void convert(FILE *fdat, int fr1, int fri, int frl)
     mem_er((ap == NULL) ? 0: 1, dim * sizeof(float));
 
     strncpy(conv, CONVERT, MAXCHR);
-    if(iext) strcpy(strstr(conv, EXTENSION), fext);
+    /*if(iext) strcpy(strstr(conv, EXTENSION), fext);*/
+    if(iext) strcat(conv, fext);
 
 
     filspec = open_file(conv, "w");

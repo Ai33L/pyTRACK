@@ -14,7 +14,7 @@ struct tot_tr *read_tracks(FILE * , int * , int * , int * , int , float * , floa
 
 int meantrd_tanh(FILE * , struct tot_tr * , int , int , int * , int * , float * , int , int , int , float , float , float , float );
 
-int aniso;
+extern int aniso;
 
 float tele_sum=0.0;
 

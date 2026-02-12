@@ -88,7 +88,8 @@ int extract(FILE *fdat)
 
 
    strncpy(tsub, EXTRACT, MAXCHR);
-   if(iext) strcpy(strstr(tsub, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(tsub, EXTENSION), fext);*/
+   if(iext) strcat(tsub, fext);
 
    nlines = 0;
 

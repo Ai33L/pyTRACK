@@ -176,7 +176,8 @@ void track_merge(struct tot_tr *alltr, int trackn, int trtyp)
     }
 
     strncpy(tmerge, FILTRS, MAXCHR);
-    if(iext) strcpy(strstr(tmerge, EXTENSION), fext);
+    /*if(iext) strcpy(strstr(tmerge, EXTENSION), fext);*/
+    if(iext) strcat(tmerge, fext);
     strcat(tmerge, "_merged");
 
     tsf = open_file(tmerge, "w");

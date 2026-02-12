@@ -2,7 +2,7 @@
 
 WORKING_JAVA := $(shell which javac)
 
-all: symlinks bfilt combine convolve count diffstat ensemble hart java ibtref landfall lifecycle mident sample split tc tele_weights tilt transadd trtrans tr2kml tr2nc tr2pgsl runs
+all: pywrapped 
 
 symlinks: FORCE
 	test -d bin || mkdir bin
@@ -67,6 +67,9 @@ trtrans: FORCE
 tr2kml: FORCE
 	cd TR2KML; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)'
 	
+pywrapped: FORCE
+	cd PYWRAPPED; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)' HAVNETC='NETCDF' ADDINCS='${ADDINCS}' ADLIBS='${ADLIBS}'
+
 tr2nc: FORCE
 	cd TR2NC; make SYSTEM='${SYSTEM}' AD_C_FLAGS='$(AD_C_FLAGS)' HAVNETC='NETCDF' ADDINCS='${ADDINCS}' ADLIBS='${ADLIBS}'
 	

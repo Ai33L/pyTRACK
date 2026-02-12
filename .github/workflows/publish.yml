@@ -1,4 +1,4 @@
-name: Build, Test, and Publish pyTRACK
+name: Publish pyTRACK
 
 on:
   workflow_dispatch:

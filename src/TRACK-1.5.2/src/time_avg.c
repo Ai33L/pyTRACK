@@ -95,7 +95,8 @@ int time_avg(FILE *fdat, int fr1, int fri, int frl, int nvar)
    char fsumw[MAXCHR];
 
    strncpy(fsumw, TAVGE, MAXCHR);
-   if(iext) strcpy(strstr(fsumw, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(fsumw, EXTENSION), fext);*/
+   if(iext) strcat(fsumw, fext);
    strcat(fsumw, "_wsum");
 
 /* assign space for header strings */
@@ -314,7 +315,8 @@ int time_avg(FILE *fdat, int fr1, int fri, int frl, int nvar)
 /* open file for writing the time average */
 
    strncpy(foutav, TAVGE, MAXCHR);
-   if(iext) strcpy(strstr(foutav, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(foutav, EXTENSION), fext);*/
+   if(iext) strcat(foutav, fext);
 
    if(form != 4) ftav = open_file(foutav, "w");
    else {
@@ -944,7 +946,8 @@ float *field_varience(FILE *fdat, float *mean, int fr1, int fri, int frl, int di
 
 
    strncpy(varf, TAVGE, MAXCHR);
-   if(iext) strcpy(strstr(varf, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(varf, EXTENSION), fext);*/
+   if(iext) strcat(varf, fext);
    strcat(varf, "_var");
 
 
@@ -1276,10 +1279,14 @@ void var_filt_freq(float *ata, float *avar, FILE *fdat, int fr1, int fri, int fr
     strncpy(spec_av, TAVGE, MAXCHR);
 
     if(iext) {
-      strcpy(strstr(varf, EXTENSION), fext);
+      /*strcpy(strstr(varf, EXTENSION), fext);
       strcpy(strstr(gridspec, EXTENSION), fext);
       strcpy(strstr(phase, EXTENSION), fext);
-      strcpy(strstr(spec_av, EXTENSION), fext);
+      strcpy(strstr(spec_av, EXTENSION), fext);*/
+      strcat(varf, fext);
+      strcat(gridspec, fext);
+      strcat(phase, fext);
+      strcat(spec_av, fext);
     }
 
     strcat(varf, "_varfil");
@@ -2881,7 +2888,8 @@ int sub_tim_avg(FILE *fdat, float *mean, int fr1, int fri, int frl, int dim, off
 
 
    strncpy(tsub, TAVGE, MAXCHR);
-   if(iext) strcpy(strstr(tsub, EXTENSION), fext);
+   /*if(iext) strcpy(strstr(tsub, EXTENSION), fext);*/
+   if(iext) strcat(tsub, fext);
    strcat(tsub, "_sub");
 
 

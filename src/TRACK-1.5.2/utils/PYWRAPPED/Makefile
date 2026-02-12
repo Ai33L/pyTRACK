@@ -11,18 +11,16 @@ OBJECT=tr2nc.o read_tracks.o write_track_netcdf.o new_time.o julian.o
 
 #CFLAGS = -g -Xa -xsb
 
-CFLAGS = -g -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) 
+CFLAGS = -g -fPIC -ansi -Wall -I../../include ${ADDINCS} -D${SYSTEM} -D${HAVNETC} $(AD_C_FLAGS) 
 
 LIBS = -lm ${ADLIBS}
 
 
 .KEEP_STATE:
 
-all: tr2nc
+.PHONY: all
+all: $(OBJECTS)
+	@echo "All object files built."
 
-tr2nc: ${OBJECTS}
-	$(CC) $(CFLAGS) -o ../bin/$@ $(OBJECT) $(LIBS)
-
-
-
-
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@

@@ -15,9 +15,9 @@
 
 struct tot_tr *read_tracks(FILE * , int * , int * , int * , int , float * , float * , float ** , int *);
 
-int aniso;
-int nff, nfld;
-int *nfwpos;
+extern int aniso;
+extern int nff, nfld;
+extern int *nfwpos;
 
 int main(int argc, char **argv)
 {
