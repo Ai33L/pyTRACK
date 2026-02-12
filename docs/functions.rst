@@ -1,6 +1,7 @@
-Functions
-=========
+Functionality
+=============
 
 .. toctree::
 
    core
+   tracking
