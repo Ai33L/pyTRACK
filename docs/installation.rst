@@ -1,7 +1,7 @@
 Installation
 ============
 
-To install pyTRACK, run the following (requires Python>=3.9)
+To install pyTRACK, run the following (requires Python>=3.9, it's best to use a conda environment)
 
 .. code-block:: bash
 
@@ -16,7 +16,7 @@ Alternatively, you can also clone this repository and install pyTRACK from it's 
 The latest tested version of the code is contained in the 'stable' branch, while the 'main' branch
 is used for active development.
 
-Then from a Python terminal anywhhere, run
+Then from a Python terminal anywhere, run
 
 .. code-block:: bash
 
