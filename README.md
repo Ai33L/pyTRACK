@@ -8,11 +8,13 @@ To install pyTRACK, simply run
 pip install track-pylib
 ```
 
-or git clone this repository and from its base folder run
+This requires a Python version >=3.9. Alternatively, you can also git clone this repository and from its base folder run
 
 ```
 pip install -e .
 ```
+
+The 'stable' branch contains the latest tested code, and the 'main' branch is used actively for development.
 
 Then from a Python terminal anywhhere, run
 
