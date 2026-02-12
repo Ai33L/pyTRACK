@@ -1,7 +1,8 @@
-Functions
-=========
+Functionality
+=============
 
-```{toctree}
+.. toctree::
 
-core
-```
+   core
+   tracking
+   statistics

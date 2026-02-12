@@ -39,6 +39,14 @@ def track_uv(infile,
              hemisphere: Literal['NH', 'SH'] = 'NH',
              ysplit: bool = False,
              trunc: Literal['T42', 'T63'] = 'T42'):
+    """
+    Workflow to track features on 850hPa u-v wind data. Tracks both cyclones and anticyclones.
+
+    Parameters
+    ----------
+    infile : str
+        Name of the input file.
+    """
 
     if outdirectory==None:
         outdirectory=os.getcwd()

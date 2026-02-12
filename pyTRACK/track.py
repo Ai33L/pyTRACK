@@ -2,6 +2,8 @@
 def track(input_file="input.nc", ext='_ext', namelist=None):
     """
     Runs TRACK.
+    Equivalent to bin/track.linux -i {input_file} -f {ext} < namelist
+    If no parameters are passed, then the usual TRACK namelist interface is triggered.
 
     Parameters
     ----------
@@ -12,9 +14,6 @@ def track(input_file="input.nc", ext='_ext', namelist=None):
     namelist : str or None
         The namelist file to be fed to track.
         This file should have track inputs in the right order in seperate lines.
-
-    Equivalent to bin/track.linux -i {input_file} -f {ext} < namelist
-    If no parameters are passed, then the usual TRACK namelist interface is triggered.
     """
 
     import os
@@ -67,15 +66,15 @@ def track(input_file="input.nc", ext='_ext', namelist=None):
 
 def set_track_env():
     """
-    Automatically called in the track() function.
+    Automatically called when the track() function is run.
     Sets and passes various paths required by TRACK.
 
-    These paths are set and passed onto the previously pre-set paths in the
+    These paths are set and passed onto the variables defined in the
     src/TRACK-1.5.2/include/*.in files.
 
-    The input and output paths are set below to the current working directory
-    The input files needed are set to the correct location with respect to the package location
-    Change the paths below if you would like to modify this behaviour
+    The input and output paths are set to be the current working directory.
+    The file paths of the required input files are set to the correct location with respect to the package location.
+    Modify here if you would like to change filepaths.
     """
 
     import os
