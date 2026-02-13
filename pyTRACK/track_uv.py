@@ -162,6 +162,9 @@ def track_uv(infile,
             os.remove(vor850_name)
 
         track_splice(fname, ext, ntime, trunc, keep_all_files=keep_all_files)
+        if not keep_all_files:
+            os.remove('interp_th'+ext) # keep_all_files?
+            os.remove('initial'+ext)
 
     #     ### extract start date and time from data file
     #     filename="indat/"+year_file
