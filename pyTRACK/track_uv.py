@@ -161,7 +161,7 @@ def track_uv(infile,
             os.remove("specfil_band000."+ext+"_band000")
             os.remove(vor850_name)
 
-        track_splice(fname, ext, ntime, trunc)
+        track_splice(fname, ext, ntime, trunc, keep_all_files=keep_all_files)
 
     #     ### extract start date and time from data file
     #     filename="indat/"+year_file
