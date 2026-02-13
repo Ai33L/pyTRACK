@@ -13,7 +13,8 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "netCDF4",
-    "xarray" 
+    "xarray",
+    "tqdm"
 ]
 
 [tool.setuptools]

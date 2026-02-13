@@ -3,7 +3,7 @@ import os
 from typing import Literal
 from math import ceil
 from .track import track, track_splice
-from .utils import data_indat, regrid
+from .utils import data_indat, regrid, run_silent
 
 try:
     from cdo import *
@@ -13,7 +13,7 @@ except Exception as e:
 
 __all__ = ['track_uv', 'calc_vorticity']
 
-def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
+def calc_vorticity(uv_file, outfile='vorticity_out.dat', ext='_ext'):
 
     # gather information about data
     year = cdo.showyear(input=uv_file)[0]
@@ -25,20 +25,22 @@ def calc_vorticity(uv_file, outfile='vorticity_out.dat'):
     indat=os.path.join(os.path.dirname(__file__), "indat", "calcvor_onelev.in")
     curr = os.getcwd()
 
-    print(indat, curr)
-
     # generate input file and calculate vorticity using TRACK
     os.system(
-    'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VORFILE/{out}/" {indat} > {curr}/calcvor_onelev_spec.in'
-    .format(u=u_name, v=v_name, nx=nx, ny=ny, out=outfile, indat=indat, curr=curr))
-    track(input_file=uv_file, namelist='calcvor_onelev_spec.in')
+    'sed -e "s/VAR1/{u}/;s/VAR2/{v}/;s/NX/{nx}/;s/NY/{ny}/;s/LEV/85000/;s/VORFILE/{out}/" {indat} > {curr}/calcvor_onelev_{ext}.in'
+    .format(u=u_name, v=v_name, nx=nx, ny=ny, out=outfile, indat=indat, curr=curr, ext=ext))
+    
+    print("Computing vorticity and outputting to "+outfile)
+    # track(input_file=uv_file, namelist=f'calcvor_onelev_{ext}.in', ext=ext)
+    run_silent(track, input_file=uv_file, namelist=f'calcvor_onelev_{ext}.in', ext=ext)
     
 
 def track_uv(infile,
              outdirectory=None,
              hemisphere: Literal['NH', 'SH'] = 'NH',
              ysplit: bool = False,
-             trunc: Literal['T42', 'T63'] = 'T42'):
+             trunc: Literal['42', '63'] = '42',
+             keep_all_files: bool = False,):
     """
     Workflow to track features on 850hPa u-v wind data. Tracks both cyclones and anticyclones.
 
@@ -48,12 +50,22 @@ def track_uv(infile,
         Name of the input file.
     """
 
-    if outdirectory==None:
-        outdirectory=os.getcwd()
+    # copy infile to output directory and change directory
+    infile = os.path.abspath(os.path.expanduser(infile))
+
+    if outdirectory is None:
+        outdir = os.getcwd()
     else:
-        os.chdir(outdirectory)
-    outdir = os.path.abspath(os.path.expanduser(outdirectory))
-    print(outdir)
+        outdir = os.path.abspath(os.path.expanduser(outdirectory))
+        os.makedirs(outdir, exist_ok=True)
+
+    dest_file = os.path.join(outdir, os.path.basename(infile))
+
+    if os.path.abspath(infile) != os.path.abspath(dest_file):
+        shutil.copy2(infile, dest_file)
+
+    infile = dest_file
+    os.chdir(outdir)
 
     # read data characteristics
     data = data_indat(infile)
@@ -97,12 +109,11 @@ def track_uv(infile,
     os.system("ncatted -a _FillValue,,d,, -a missing_value,,d,, " + infile_egf)
     os.system("mv " + infile_egf + " " + infile_e)
     
-    
     # get final data info
     data = data_indat(infile_e)
     nx, ny = data.get_nx_ny()
-
-    ################## END OF PROCESSING ####################################################################
+    if not keep_all_files:
+        os.remove(infile) # keep_all_files?
 
     # Years
     years = cdo.showyear(input=infile_e)[0].split()
@@ -129,19 +140,28 @@ def track_uv(infile,
         ntime = data.get_timesteps()
 
         # calculate vorticity from UV
-        vor850_name = "vor850"+ext+".dat"
-        calc_vorticity(year_file, outfile=vor850_name)
+        vor850_name = "vor850_"+ext+".dat"
+        calc_vorticity(year_file, outfile=vor850_name, ext=ext)
+        if not keep_all_files:
+            os.remove('calcvor_onelev_'+ext+'.in') # keep_all_files?
+            os.remove('initial'+ext)
 
-        fname = "T42filt_" + vor850_name
+        fname = "T"+trunc+"filt_" + vor850_name
         indat=os.path.join(os.path.dirname(__file__), "indat", "specfilt.in")
         os.system(
-        'sed -e "s/NX/{nx}/;s/NY/{ny}/;s/TRUNC/42/" {indat} > spec_T42_nx{nx}_ny{ny}.in'
-        .format(nx=nx, ny=ny, indat=indat)
+        'sed -e "s/NX/{nx}/;s/NY/{ny}/;s/TRUNC/{trunc}/" {indat} > spec_T{trunc}_nx{nx}_ny{ny}.in'
+        .format(nx=nx, ny=ny, indat=indat, trunc=trunc)
         )
-        track(input_file=vor850_name, ext=ext, namelist="spec_T42_nx" + nx + "_ny" + ny + ".in")
+        print('T'+trunc+' truncation and filtering out small wavenumbers to output file '+fname)
+        run_silent(track, input_file=vor850_name, ext=ext, namelist="spec_T"+trunc+"_nx" + nx + "_ny" + ny + ".in")
         os.system("mv "+ "specfil_band001."+ext+"_band001 " + fname)
+        if not keep_all_files:
+            os.remove("spec_T"+trunc+"_nx" + nx + "_ny" + ny + ".in") # keep_all_files?
+            os.remove('initial'+ext)
+            os.remove("specfil_band000."+ext+"_band000")
+            os.remove(vor850_name)
 
-        track_splice(fname, ext, ntime)
+        track_splice(fname, ext, ntime, trunc)
 
     #     ### extract start date and time from data file
     #     filename="indat/"+year_file
