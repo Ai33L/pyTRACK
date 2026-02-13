@@ -2,7 +2,7 @@ pyTRACK documentation
 =====================
 
 This is the documentation for pyTRACK, a python-wrapped implementation of the
-`TRACK <https://gitlab.act.reading.ac.uk/track/track>`_ [1]_, [2]_, [3]_ and [4]_ software.
+`TRACK <https://gitlab.act.reading.ac.uk/track/track>`_ [1]_ [2]_ [3]_ [4]_ software.
 
 TRACK is a powerful storm tracking software package that automatically identifies and tracks storm features 
 in model and observational data. pyTRACK is intended to be an implementation of TRACK on Python that ports 

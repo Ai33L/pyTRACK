@@ -3,8 +3,8 @@ Feature tracking
 
 .. autofunction:: pyTRACK.track_uv
 
-The track_uv function currently requires a particular infile file format. Here is a code snippet on python that 
-demonstrate how you can meet most of these.
+The track_uv function currently requires a particular infile file format. Below is a code snippet on python that 
+demonstrates how you can meet most of these.
 
 .. code-block:: bash
 

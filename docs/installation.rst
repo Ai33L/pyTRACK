@@ -34,6 +34,6 @@ you need them. For the cdo functionality specifically, it's best to work on a co
 
 .. code-block:: bash
 
-    conda install python-cdo
+    conda install conda-forge::python-cdo
 
 when prompted.
