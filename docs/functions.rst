@@ -5,4 +5,3 @@ Functionality
 
    core
    tracking
-   statistics

@@ -153,3 +153,22 @@ def regrid(input, outfile):
         print("Regridded to " + grid + " Gaussian grid.")
 
     return
+
+def run_silent(func, *args, **kwargs):
+    import os, sys
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    old_stdout = os.dup(1)
+    old_stderr = os.dup(2)
+    devnull = os.open(os.devnull, os.O_WRONLY)
+
+    os.dup2(devnull, 1)
+    os.dup2(devnull, 2)
+
+    try:
+        return func(*args, **kwargs)
+    finally:
+        os.dup2(old_stdout, 1)
+        os.dup2(old_stderr, 2)
+        os.close(devnull)

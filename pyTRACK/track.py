@@ -2,7 +2,9 @@
 def track(input_file="input.nc", ext='_ext', namelist=None):
     """
     Runs TRACK.
+
     Equivalent to bin/track.linux -i {input_file} -f {ext} < namelist
+
     If no parameters are passed, then the usual TRACK namelist interface is triggered.
 
     Parameters
@@ -135,13 +137,36 @@ def set_track_env():
     os.environ["CONSDAT_SPHERY"] = os.path.join(pkgpath, "data", "constraints.dat.sphery")
 
 
-def track_splice(datin, ext, ntime):
+def track_splice(datin, ext, ntime, trunc, keep_all_files=False):
+    """
+    Code to run feature tracking in parts and combine at the end.
+    This is because tracking in one go can be really expensive for long time series.
+
+    This code is automatically called from track_uv()
+
+    Parameters
+    ----------
+    datin : str
+        The final processed vorticity file
+    ext : str
+        Extension to append to the TRACK output files.
+    ntime
+        Number of frames in datin
+    trunc : str
+        Spectral truncation required - defaults to T42.
+        Note - setting T63 will take longer and track more cyclones!
+    keep_all_files : bool
+        Do you want to keep all the intermediate files? Default is no.
+        Turn this on if you want to retreive these files, or during development.
+    """
 
     import shutil
     from pathlib import Path
     from math import ceil
     import re
     import os
+    from .utils import run_silent
+    from tqdm import tqdm
 
     SRCDIR = Path(os.path.dirname(__file__))
     RDAT = SRCDIR / "indat"
@@ -150,7 +175,7 @@ def track_splice(datin, ext, ntime):
     DIR3 = DIR2 / ext
 
     DATIN = datin
-    INITIAL = os.path.join(SRCDIR, 'data', 'initial.T42_'+ext[:2])
+    INITIAL = os.path.join(SRCDIR, 'data', 'initial.T'+trunc+'_'+ext[:2])
     EXT=ext
 
     ST = 1
@@ -212,12 +237,6 @@ def track_splice(datin, ext, ntime):
 
         return "".join(out_lines)
 
-
-
-    # ------------------------------
-    # Main loop
-    # ------------------------------
-
     S = ST
     F = FN
     I = F - S
@@ -226,7 +245,7 @@ def track_splice(datin, ext, ntime):
     E = EE
     QQ = 0
 
-    while N <= E:
+    for N in tqdm(range(1, E + 1), desc="Tracking in parts"):
 
         # --- Prepare input files ---
         fileA = ODAT / f"{RUNDT}.{EXT}"
@@ -245,31 +264,25 @@ def track_splice(datin, ext, ntime):
         min_dir.mkdir(parents=True, exist_ok=True)
 
         # --- Run TRACK for +ve field ---
-        print('starting', N, S, F)
-        track(input_file=DATIN, ext=ext, namelist=fileA)
+        run_silent(track, input_file=DATIN, ext=ext, namelist=fileA)
 
 
         # Move output files to DJF_MAX
-        print('moving', N)
         file_list = [RUNDT, "objout.new", "objout", "tdump", "idump"]
         for fname in file_list:
-            for src_file in ODAT.glob(f"{fname}*"):
+            for src_file in ODAT.glob(f"{fname}{ext}"):
                 dst_file = max_dir / fname
-                print(f"Moving {src_file} -> {dst_file}")
                 shutil.move(str(src_file), str(dst_file))
         
         fileB.write_text(replace_namelist(templateB, S, F, INITIAL, first_run, flag=True))
         # --- Run TRACK for -ve field ---
-        print('starting - ', N)
-        track(input_file=DATIN, ext=ext, namelist=fileB)
+        run_silent(track,input_file=DATIN, ext=ext, namelist=fileB)
 
         # Move output files to DJF_MIN
-        print('moving - ', N)
         file_list = [RUNDT, "objout.new", "objout", "tdump", "idump"]
         for fname in file_list:
-            for src_file in ODAT.glob(f"{fname}*"):
+            for src_file in ODAT.glob(f"{fname}{ext}"):
                 dst_file = min_dir / fname
-                print(f"Moving {src_file} -> {dst_file}")
                 shutil.move(str(src_file), str(dst_file))
 
         # --- Prepare splice files ---
@@ -295,13 +308,7 @@ def track_splice(datin, ext, ntime):
             E = N
             QQ = 1
 
-    print('part 1 success!!')
-
     shutil.move("initial"+ext, DIR3 / "initial")
-
-    # ------------------------------
-    # Splice mode
-    # ------------------------------
 
     def run_splice(splice_file, out_prefix, ext):
         temp_file = ODAT / f"RSPLICE.temp.{out_prefix}"
@@ -328,46 +335,34 @@ def track_splice(datin, ext, ntime):
         splice_file.unlink()
 
         # Run track in splice mode
-        track(input_file=DATIN, ext=ext, namelist=rsplice)
+        run_silent(track,input_file=DATIN, ext=ext, namelist=rsplice)
 
         # Move outputs
 
         prefixes = ["tr_trs", "tr_grid", "ff_trs"]
         for prefix in prefixes:
-            for src in ODAT.glob(f"{prefix}*"):
+            for src in ODAT.glob(f"{prefix}{ext}*"):
                 name = src.name
+                suffix = ".nc" if name.endswith(".nc") else ""
+                dst = DIR3 / f"{prefix}_{out_prefix}{suffix}"
 
-                # strip anything after the prefix, before optional .nc
-                m = re.match(rf"({prefix})([^.]*)?(\.nc)?$", name)
-                if not m:
-                    continue
-                base = m.group(1)          # tr_trs / ff_trs / tr_grid
-                ext = m.group(3) or ""     # .nc or empty
-
-                dst = DIR3 / f"{base}_{out_prefix}{ext}"
                 shutil.move(str(src), str(dst))
         shutil.move(str(rsplice), DIR3 / f"RSPLICE_{out_prefix}")
 
 
     # Run splice for positive and negative
+    print("Combining individual track splits with output to "+str(DIR3))
     run_splice(ODAT / f"splice_max.{EXT}", "pos", ext=ext)
     run_splice(ODAT / f"splice_min.{EXT}", "neg", ext=ext)
 
-    # ------------------------------
-    # Final cleanup
-    # ------------------------------
+    
+    # Cleanup
     for f in ODAT.glob(f"{RUNDT}*.{EXT}"):
         f.unlink()
-    for f in ["idump.ext", "throut.ext", "objout.ext", ".run_at.lock.ext"]:
-        fp = ODAT / f
-        if fp.exists():
-            fp.unlink()
-
-    # Move initial files
-    for fname in ["initial.ext", "user_tavg.ext", "user_tavg.ext_var", "user_tavg.ext_varfil"]:
-        src = ODAT / fname
-        if src.exists():
-            shutil.move(str(src), DIR3 / fname)
-
-    # Compress output directory
-    shutil.make_archive(str(DIR3), 'gztar', root_dir=str(DIR3))
+    if not keep_all_files:
+        for f in DIR3.iterdir():
+            if not (f.name.startswith("ff") or f.name.startswith("tr")):
+                if f.is_file():
+                    f.unlink()
+                elif f.is_dir():
+                    shutil.rmtree(f)
