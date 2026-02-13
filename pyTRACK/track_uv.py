@@ -43,11 +43,26 @@ def track_uv(infile,
              keep_all_files: bool = False,):
     """
     Workflow to track features on 850hPa u-v wind data. Tracks both cyclones and anticyclones.
+    
+    First computes vortiticy from the input data and then truncates and spectrally filters out small wavenumbers.
+
+    Tracks features on this data.
 
     Parameters
     ----------
     infile : str
         Name of the input file.
+    outdirectory : str
+        Path to the output directory, will be created if it does not already exist.
+    ysplit : bool
+        Should tracking be done for each year separately.
+        Turn this on if you're tracking by season!
+    trunc : str
+        Spectral truncation required - defaults to T42.
+        Note - setting T63 will take longer and track more cyclones!
+    keep_all_files : bool
+        Do you want to keep all the intermediate files? Default is no.
+        Turn this on if you want to retreive these files, or during development.
     """
 
     # copy infile to output directory and change directory
@@ -130,7 +145,6 @@ def track_uv(infile,
 
         # select year from data
         if ysplit:
-            print("Splitting: " + year)
             year_file = infile_e[:-3] + "_" + year + ".nc"
             cdo.selyear(year, input=infile_e, output=year_file)
         else:
@@ -145,6 +159,8 @@ def track_uv(infile,
         if not keep_all_files:
             os.remove('calcvor_onelev_'+ext+'.in') # keep_all_files?
             os.remove('initial'+ext)
+            if ysplit:
+                os.remove(year_file)
 
         fname = "T"+trunc+"filt_" + vor850_name
         indat=os.path.join(os.path.dirname(__file__), "indat", "specfilt.in")
@@ -165,6 +181,7 @@ def track_uv(infile,
         if not keep_all_files:
             os.remove('interp_th'+ext) # keep_all_files?
             os.remove('initial'+ext)
+            os.remove(fname)
 
     #     ### extract start date and time from data file
     #     filename="indat/"+year_file

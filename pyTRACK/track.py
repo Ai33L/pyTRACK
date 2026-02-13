@@ -138,6 +138,27 @@ def set_track_env():
 
 
 def track_splice(datin, ext, ntime, trunc, keep_all_files=False):
+    """
+    Code to run feature tracking in parts and combine at the end.
+    This is because tracking in one go can be really expensive for long time series.
+
+    This code is automatically called from track_uv()
+
+    Parameters
+    ----------
+    datin : str
+        The final processed vorticity file
+    ext : str
+        Extension to append to the TRACK output files.
+    ntime
+        Number of frames in datin
+    trunc : str
+        Spectral truncation required - defaults to T42.
+        Note - setting T63 will take longer and track more cyclones!
+    keep_all_files : bool
+        Do you want to keep all the intermediate files? Default is no.
+        Turn this on if you want to retreive these files, or during development.
+    """
 
     import shutil
     from pathlib import Path
