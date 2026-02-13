@@ -67,6 +67,7 @@ def track_uv(infile,
 
     # copy infile to output directory and change directory
     infile = os.path.abspath(os.path.expanduser(infile))
+    infile_copied=False
 
     if outdirectory is None:
         outdir = os.getcwd()
@@ -78,6 +79,7 @@ def track_uv(infile,
 
     if os.path.abspath(infile) != os.path.abspath(dest_file):
         shutil.copy2(infile, dest_file)
+        infile_copied=True
 
     infile = dest_file
     os.chdir(outdir)
@@ -127,7 +129,7 @@ def track_uv(infile,
     # get final data info
     data = data_indat(infile_e)
     nx, ny = data.get_nx_ny()
-    if not keep_all_files:
+    if (not keep_all_files) and infile_copied:
         os.remove(infile) # keep_all_files?
 
     # Years
