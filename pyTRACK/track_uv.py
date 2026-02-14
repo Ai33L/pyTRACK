@@ -39,6 +39,7 @@ def track_uv(infile,
              outdirectory=None,
              hemisphere: Literal['NH', 'SH'] = 'NH',
              ysplit: bool = False,
+             sdate=None,
              trunc: Literal['42', '63'] = '42',
              keep_all_files: bool = False,):
     """
@@ -46,7 +47,9 @@ def track_uv(infile,
     
     First computes vortiticy from the input data and then truncates and spectrally filters out small wavenumbers.
 
-    Tracks features on this data.
+    Tracks features on this data. Outputs to outdirectory in folders of {hemisphere}_y{year}.
+
+    If sdate is passed, then rewrites the .nc files with date_time matching the passed sdate.
 
     Parameters
     ----------
@@ -57,6 +60,9 @@ def track_uv(infile,
     ysplit : bool
         Should tracking be done for each year separately.
         Turn this on if you're tracking by season!
+    sdate : str
+        First time step in MMDDHH format.
+        Start year is captured from the file directly, taking ysplit into consideration.
     trunc : str
         Spectral truncation required - defaults to T42.
         Note - setting T63 will take longer and track more cyclones!
@@ -137,11 +143,16 @@ def track_uv(infile,
     print("Years: ", years)
 
     if not ysplit:
+        Y=years[0]
         years = ["all"]
 
     # do tracking for one year at a time
     
     for year in years:
+        os.chdir(outdir)
+        if ysplit:
+            Y=year
+
         print("Running TRACK for year: " + year + "...")
         ext=hemisphere+'_y'+year
 
@@ -185,59 +196,61 @@ def track_uv(infile,
             os.remove('initial'+ext)
             os.remove(fname)
 
-    #     ### extract start date and time from data file
-    #     filename="indat/"+year_file
-    #     sdate = subprocess.check_output(f"cdo showdate {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
-    #     sdate = sdate.decode('utf-8').strip()
-    #     stime1 = subprocess.check_output(f"cdo showtime {filename} | head -n 1 | awk '{{print $1}}'", shell=True)
-    #     stime1 = stime1.decode('utf-8').strip()
-        
-    #     # hotfix for start year before 1979
-    #     if sdate[0]=='0':
-    #         sdate='2'+sdate[1:]
-        
-    #     # convert initial date to string for util/count, in format YYYYMMDDHH
-    #     timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
-    #     datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
-    #     timedelta=6
+        if sdate is not None:
+            print('sdate passed - rewriting .nc files with Gregorian dates')
+            os.chdir('output_track/'+ext)
+            if len(Y)<4:
+                YY=str(2000+int(Y))
+                print('Year needs to be later than 1979 - shifting year to', YY)
+            
+            # convert initial date to string for util/count, in format YYYYMMDDHH
+            datetime=YY+sdate[:2]+sdate[2:4]+sdate[4:6]
+            datetime_exp=YY+'-'+sdate[:2]+'-'+sdate[2:4]+' '+sdate[4:6]
+            timedelta=6
 
-    #     if shift:
-    #         sdate=str(int(sdate[0:4])-1)+'-11-'+sdate[8:10]
-    #         print('shifted start date :', sdate)
-    #         timestring=sdate[0:4]+sdate[5:7]+sdate[8:10]+stime1[0:2]
-    #         datetime=sdate[0:4]+'-'+sdate[5:7]+'-'+sdate[8:10]+' '+stime1[0:2]
+            for file in ["tr_trs_pos", "tr_trs_neg", "ff_trs_pos", "ff_trs_neg"]:
+                print('Writing', file+'.nc')
+                tr2nc_vor(file, datetime, datetime_exp, timedelta)
+            os.remove('tr2nc.meta.elinor')
 
-    #     # tr2nc - turn tracks into netCDF files
-    #     os.system("gunzip '" + outdir + "'/" + c_input + "/ff_trs_*")
-    #     os.system("gunzip '" + outdir + "'/" + c_input + "/tr_trs_*")
-    #     tr2nc_vor(outdir + "/" + c_input + "/ff_trs_pos", timestring, datetime, timedelta)
-    #     tr2nc_vor(outdir + "/" + c_input + "/ff_trs_neg", timestring, datetime, timedelta)
-    #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_pos", timestring, datetime, timedelta)
-    #     tr2nc_vor(outdir + "/" + c_input + "/tr_trs_neg", timestring, datetime, timedelta)
-
-    
     return
 
-# def tr2nc_vor(input, timestring, datetime, timedelta):
-#     """
-#     Convert vorticity tracks from ASCII to NetCDF using TR2NC utility
+def tr2nc_vor(input, datetime, datetime_exp, timedelta):
+    """
+    Function to rewrite .nc files with Gregorian date-time.
+    """
+    import os
+    import ctypes
 
-#     Parameters
-#     ----------
+    curr=os.getcwd()
+    pkgpath=os.path.dirname(__file__)
+    indat=os.path.join(pkgpath, "indat", "tr2nc.meta.elinor")
+    os.system(
+    'sed -e "s/START/{datetime}/;s/STEP/{step}/;s/DATETIME/{datetime_exp}/" {indat} > {curr}/tr2nc.meta.elinor'
+    .format(datetime=datetime, datetime_exp=datetime_exp, step=timedelta, indat=indat, curr=curr))
 
-#     input : string
-#         Path to ASCII file containing tracks
+    _LIB = os.path.join(os.path.dirname(__file__), "_lib", "libtrackutils.so")
 
-#     """
+    if not os.path.exists(_LIB):
+        raise FileNotFoundError(f"libtrackutils.so not found at {_LIB}")
 
-#     ## ASh -- to get the right date range, modify the tr2nc.meta.elinor file with the right details 
-    
-#     fullpath = os.path.abspath(input)
-#     cwd = os.getcwd()
-#     os.chdir(str(Path.home()) + "/TRACK/utils/TR2NC")
-#     os.system("sed -e \"s/START/"+ str(timestring) + "/;s/DATE_TIME/" + str(datetime) + "/;s/STEP/" + str(timedelta) + "/\" tr2nc.meta.elinor > tr2nc.meta.elinor_mod")
-#     os.chdir(str(Path.home()) + "/TRACK/utils/bin")
-#     os.system("tr2nc '" + fullpath + "' s ../TR2NC/tr2nc.meta.elinor_mod")
-#     os.chdir(cwd)
-#     return
+    lib = ctypes.CDLL(_LIB)
 
+    # Define function signature
+    lib.tr2nc_main.argtypes = [
+        ctypes.c_int,
+        ctypes.POINTER(ctypes.c_char_p)
+    ]
+    lib.tr2nc_main.restype = ctypes.c_int
+
+    args = [
+        b"track",
+        input.encode("utf-8"),
+        b"s", (curr+'/tr2nc.meta.elinor').encode("utf-8")
+    ]
+    argc = len(args)
+    argv = (ctypes.c_char_p * argc)(*args)
+
+    lib.tr2nc_main(argc, argv)
+
+    return
