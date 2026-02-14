@@ -93,7 +93,8 @@ struct tot_tr *read_tracks(FILE *tsf, int *tr_count, int *gpr, int *ipr, int fld
 
     if(!nff){
     
-       printf("***INFORMATION***, there are no additional fields associated with this track data.\n\n");
+       /*printf("***INFORMATION***, there are no additional fields associated with this track data.\n\n");*/
+       ;
 	
     }
     else {
@@ -107,7 +108,7 @@ struct tot_tr *read_tracks(FILE *tsf, int *tr_count, int *gpr, int *ipr, int fld
               nff, npos);
     }
 
-    printf("****INFORMATION****, number of tracks is %d\n", *tr_count);
+    printf("Number of tracks is %d\n", *tr_count);
 
     all_tr = (struct tot_tr * )calloc(*tr_count, sizeof(struct tot_tr));
     mem_er((all_tr == NULL) ? 0 : 1, *tr_count * sizeof(struct tot_tr));

@@ -88,7 +88,7 @@ void write_track_netcdf(struct tot_tr *trr , int trnum, char *filnm, int itrtyp,
        exit(1);
     }
 
-    printf("****INFORMATION****, writing netcdf file %s\n", nfilout);
+    /*printf("****INFORMATION****, writing netcdf file %s\n", nfilout);*/
 
 /*    printf("Do you want to change default field variable names, 'y' or 'n'.\n\n");
     scanf("\n");

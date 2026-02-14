@@ -15,7 +15,7 @@ int noheader=0;
 extern int nfld, nff;
 extern int *nfwpos;
 
-int main(int argc, char *argv[])
+int tr2nc_main(int argc, char *argv[])
 {
    int i=0;
    int trnum=0;
