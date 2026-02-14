@@ -40,7 +40,7 @@ class BuildTRACK(build_py):
 
 setup(
     name="pyTRACK",
-    version="0.3.1",
+    version="0.4.0",
     description="Python-wrapped implementation of the TRACK software",
     packages=find_packages(),
     cmdclass={"build_py": BuildTRACK},

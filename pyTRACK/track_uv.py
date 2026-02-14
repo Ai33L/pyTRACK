@@ -240,4 +240,3 @@ def track_uv(infile,
 #     os.system("tr2nc '" + fullpath + "' s ../TR2NC/tr2nc.meta.elinor_mod")
 #     os.chdir(cwd)
 #     return
-
