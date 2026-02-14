@@ -1,9 +1,7 @@
-import shutil
 import os
-from typing import Literal
 from math import ceil
 from .track import track, track_splice
-from .utils import data_indat, regrid, run_silent
+from .utils import run_silent
 from pathlib import Path
 
 __all__ = ['stats_track']
@@ -41,13 +39,15 @@ def stats_track(outdirectory=None, keep_all_files=False):
 
     for dir in dirs:
         os.chdir(dir)
+        print('Entering', dir)
 
         for file in ["ff_trs_pos", "ff_trs_neg"]:
 
             os.system('sed -e "s/FILE_NAME/{file}/" {indat} > {dir}/track_stats.in'
             .format(file=file, indat=indat, dir=dir))
 
-            track(input_file=indat_def, namelist=dir+'/track_stats.in')
+            print('Running stats for', file, "to write stats_"+file+".nc")
+            run_silent(track, input_file=indat_def, namelist=dir+'/track_stats.in')
             os.system("mv "+ "stat_trs_scl_ext_1.nc stats_"+file+".nc")
 
             if not keep_all_files:
