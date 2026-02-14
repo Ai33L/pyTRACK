@@ -47,7 +47,9 @@ def track_uv(infile,
     
     First computes vortiticy from the input data and then truncates and spectrally filters out small wavenumbers.
 
-    Tracks features on this data.
+    Tracks features on this data. Outputs to outdirectory in folders of {hemisphere}_y{year}.
+
+    If sdate is passed, then rewrites the .nc files with date_time matching the passed sdate.
 
     Parameters
     ----------
