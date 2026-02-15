@@ -68,10 +68,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: dist-*
-          path: dist/
+          path: artifacts/
 
-      - name: List dist files
-        run: ls -l dist
+      - name: Flatten dist folders
+        run: |
+          mkdir -p dist
+          find artifacts -type f \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp {} dist/ \;
+
+      - name: List files being published
+        run: ls -1 dist/
 
       - name: Check if version already exists on PyPI
         run: |
@@ -81,11 +86,10 @@ jobs:
           if curl --silent https://pypi.org/pypi/$PACKAGE_NAME/json | jq -e ".releases[\"$VERSION\"]" > /dev/null; then
             echo "Error: Version $VERSION already exists on PyPI!"
             exit 1
-          else
-            echo "Version $VERSION is available."
           fi
 
       - name: Publish to PyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist
+
