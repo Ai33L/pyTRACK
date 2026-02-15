@@ -1,47 +1,42 @@
 from setuptools import setup, find_packages, Extension
-from setuptools.command.build_ext import build_ext
-import subprocess
-import os
+from setuptools.command.build_py import build_py
+import subprocess, os, shutil, tarfile, glob
 
+TRACK_TARBALL = "TRACK-1.5.2.tar.bz2"
 TRACK_DIR = "TRACK-1.5.2"
-SRC_DIR = os.path.join("src", TRACK_DIR)
-LIB_FILES = ["libtrack.so", "libtrackutils.so"]
 
-class BuildTrackExt(build_ext):
+class BuildTRACK(build_py):
     def run(self):
-        # Ensure TRACK source exists
-        if not os.path.isdir(SRC_DIR):
-            raise RuntimeError(f"{TRACK_DIR} not found in src/")
-
-        print("Building TRACK shared libraries...")
-        # Build both shared libraries via make
-        for target in ["libtrack", "libtrackutils"]:
-            subprocess.check_call(["make", target], cwd=SRC_DIR)
-
-        # Copy .so files into build lib folder
-        lib_dst = os.path.join(self.build_lib, "pyTRACK", "_lib")
-        os.makedirs(lib_dst, exist_ok=True)
-        for so_file in LIB_FILES:
-            src = os.path.join(SRC_DIR, so_file)
-            dst = os.path.join(lib_dst, so_file)
-            self.copy_file(src, dst)
-            print(f"{so_file} copied to {lib_dst}")
-
+        self.build_track()
+        self.build_extensions()
         super().run()
 
-# Dummy Extensions to mark wheel as platform-specific
-ext_modules = [
-    Extension("pyTRACK._lib." + os.path.splitext(f)[0], sources=[])
-    for f in LIB_FILES
-]
+    def build_track(self):
+        root = os.path.abspath(os.path.dirname(__file__))
+        track_src = os.path.join(root, "src", TRACK_DIR)
+        if not os.path.isdir(track_src):
+            with tarfile.open(os.path.join(root, "src", TRACK_TARBALL)) as tar:
+                tar.extractall(os.path.join(root, "src"))
+        subprocess.check_call(["make", "libtrack"], cwd=track_src)
+        lib_dst = os.path.join(root, "pyTRACK", "_lib")
+        os.makedirs(lib_dst, exist_ok=True)
+        for so_file in ["libtrack.so", "libtrackutils.so"]:
+            shutil.copy(os.path.join(track_src, so_file), lib_dst)
+
+    def build_extensions(self):
+        so_files = glob.glob(os.path.join("pyTRACK", "_lib", "*.so"))
+        for so in so_files:
+            module_name = "pyTRACK._lib." + os.path.splitext(os.path.basename(so))[0]
+            ext = Extension(module_name, sources=[])
+            if not hasattr(self.distribution, "ext_modules") or self.distribution.ext_modules is None:
+                self.distribution.ext_modules = []
+            self.distribution.ext_modules.append(ext)
 
 setup(
-    name="TRACK-pylib",
+    name="pyTRACK",
     version="0.4.1",
-    description="Python-wrapped implementation of TRACK software",
+    description="Python-wrapped implementation of the TRACK software",
     packages=find_packages(),
-    ext_modules=ext_modules,
-    cmdclass={"build_ext": BuildTrackExt},
+    cmdclass={"build_py": BuildTRACK},
     include_package_data=True,
-    package_data={"pyTRACK": ["_lib/*.so", "data/**", "indat/**"]},
 )
