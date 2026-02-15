@@ -14,32 +14,34 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python (host Python for cibuildwheel)
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
 
       - name: Install build tools
         run: |
           python -m pip install --upgrade pip
           pip install cibuildwheel pytest
 
-      - name: Build manylinux wheels
+      - name: Build manylinux wheel for Python ${{ matrix.python-version }}
         run: python -m cibuildwheel --output-dir dist
         env:
-          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
+          CIBW_BUILD: "cp${{ matrix.python-version | replace('.', '') }}-manylinux_x86_64"
           CIBW_SKIP: "*-musllinux_i686"
           CIBW_BEFORE_BUILD_LINUX: |
             yum install -y gcc gcc-gfortran make
             yum install -y netcdf netcdf-devel hdf5 hdf5-devel
 
-
-      - name: Test built wheel
+      - name: Test built wheel for Python ${{ matrix.python-version }}
         run: |
           pip install dist/*.whl
           pytest -v tests
@@ -47,18 +49,17 @@ jobs:
       - name: Upload built distributions
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ matrix.python-version }}
           path: dist/
 
   publish:
     needs: build-test
     runs-on: ubuntu-latest
-
     steps:
-      - name: Download built distributions
+      - name: Download one set of distributions (Python 3.9)
         uses: actions/download-artifact@v4
         with:
-          name: dist
+          name: dist-3.9
           path: dist/
 
       - name: Check if version already exists on PyPI
