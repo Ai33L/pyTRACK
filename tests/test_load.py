@@ -1,14 +1,12 @@
 import os
 import ctypes
-import pytest
+import pyTRACK
 
 def test_track_function_loads():
+    # locate the shared lib relative to the installed package
+    lib_dir = os.path.join(os.path.dirname(pyTRACK.__file__), "_lib")
+    lib_path = os.path.join(lib_dir, "libtrack.so")
 
-    import pyTRACK
-
-    lib_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "pyTRACK", "_lib", "libtrack.so")
-    )
     assert os.path.exists(lib_path), f"{lib_path} not found"
 
     lib = ctypes.CDLL(lib_path)
