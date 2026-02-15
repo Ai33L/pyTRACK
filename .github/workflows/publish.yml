@@ -14,12 +14,6 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-
-    env:
-      # Tell cibuildwheel to run pytest on each installed wheel
-      CIBW_TEST_REQUIRES: "pytest"
-      CIBW_TEST_COMMAND: "pytest {project}/tests"
-
     strategy:
       matrix:
         include:
@@ -34,11 +28,15 @@ jobs:
           - python-version: "3.13"
             cibw-build: "cp313-manylinux_x86_64"
 
+    env:
+      CIBW_TEST_REQUIRES: "pytest"
+      CIBW_TEST_COMMAND: "pytest {project}/tests"
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python (host Python for cibuildwheel)
+      - name: Set up Python (host)
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -46,7 +44,7 @@ jobs:
       - name: Install cibuildwheel
         run: python -m pip install --upgrade pip cibuildwheel
 
-      - name: Build and Test manylinux wheel
+      - name: Build and test manylinux wheels
         run: python -m cibuildwheel --output-dir dist
         env:
           CIBW_BUILD: ${{ matrix.cibw-build }}
@@ -55,7 +53,7 @@ jobs:
             yum install -y gcc gcc-gfortran make
             yum install -y netcdf netcdf-devel hdf5 hdf5-devel
 
-      - name: Upload built distributions
+      - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.python-version }}
@@ -66,11 +64,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download one set of distributions (Python 3.9)
+      - name: Download all wheel artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist-3.9
+          pattern: dist-*
           path: dist/
+
+      - name: List dist files
+        run: ls -l dist
 
       - name: Check if version already exists on PyPI
         run: |

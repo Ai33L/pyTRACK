@@ -37,7 +37,7 @@ extensions = [
 
 setup(
     name="pyTRACK",
-    version="0.4.1",
+    version="0.4.2",
     packages=find_packages(),
     ext_modules=extensions,
     cmdclass={"build_ext": BuildTrackExt},
