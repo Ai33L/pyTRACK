@@ -15,49 +15,38 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-
     steps:
-      # Step 1: Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2: Set up Python
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+      - name: Set up Python (host Python for cibuildwheel)
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
 
-      # Step 3: Install system dependencies
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gfortran gcc libnetcdf-dev build-essential jq curl
-
-      # Step 4: Install Python build & test tools
-      - name: Install Python tools
+      - name: Install build tools
         run: |
           python -m pip install --upgrade pip
-          pip install build pytest
+          pip install cibuildwheel pytest
 
-      # Step 5: Build package
-      - name: Build package
-        run: python -m build --sdist --wheel
+      - name: Build manylinux wheels
+        run: python -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BUILD: "cp39-manylinux_x86_64 cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
+          CIBW_SKIP: "*-musllinux_i686"
+          CIBW_BEFORE_BUILD_LINUX: >
+            yum install -y gcc gcc-gfortran make
+            yum install -y netcdf netcdf-devel hdf5 hdf5-devel
 
-      # Step 6: Install package and run tests
-      - name: Install and test pyTRACK
+      - name: Test built wheel
         run: |
           pip install dist/*.whl
           pytest -v tests
 
-      # Step 7: Upload build artifacts (needed for publish job)
-      - name: Upload dist artifacts
+      - name: Upload built distributions
         uses: actions/upload-artifact@v4
         with:
-          name: dist-${{ matrix.python-version }}
+          name: dist
           path: dist/
 
   publish:
@@ -65,15 +54,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Download one set of artifacts (any version is fine)
-      - name: Download dist artifacts
+      - name: Download built distributions
         uses: actions/download-artifact@v4
         with:
-          name: dist-3.9
+          name: dist
           path: dist/
 
-      # Step 2: Check if version already exists on PyPI
-      - name: Check PyPI for existing version
+      - name: Check if version already exists on PyPI
         run: |
           VERSION="${{ github.event.inputs.version }}"
           PACKAGE_NAME="TRACK-pylib"
@@ -85,8 +72,7 @@ jobs:
             echo "Version $VERSION is available."
           fi
 
-      # Step 3: Publish to PyPI via OIDC (Trusted Publisher)
       - name: Publish to PyPI via OIDC
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages_dir: dist
+          packages-dir: dist
