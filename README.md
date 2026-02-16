@@ -2,15 +2,17 @@
 
 [TRACK](https://gitlab.act.reading.ac.uk/track/track) [^1] [^2] [^3] [^4] is a powerful storm tracking software package that automatically identifies and tracks storm features in model and observational data. pyTRACK is intended to be an implementation of TRACK on Python that ports over most features of TRACK, while being easy to install and use.
 
-To install pyTRACK, simply run (Best to use a conda environment with Python>=3.9)
+If you're on a Linux-based system, pyTRACK can be installed by simply running (Best to use a conda environment with Python>=3.9)
 
 ```
 pip install track-pylib
 ```
 
-Alternatively, you can also git clone this repository and from its base folder run
+If that doesn't work, git clone the stable branch of this repository and pip install from the base directory.
 
 ```
+git clone -b stable https://github.com/Ai33L/pyTRACK.git
+cd pyTRACK
 pip install -e .
 ```
 

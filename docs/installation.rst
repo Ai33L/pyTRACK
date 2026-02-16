@@ -1,16 +1,18 @@
 Installation
 ============
 
-To install pyTRACK, run the following (requires Python>=3.9, it's best to use a conda environment)
+If you're on a Linux-based system, run the following to install pyTRACK (Best to use a conda environment with Python>=3.9)
 
 .. code-block:: bash
 
     pip install track-pylib
 
-Alternatively, you can also clone this repository and install pyTRACK from it's base folder with
+If that doesn't work, git clone the stable branch of this repository and pip install from the base directory.
 
 .. code-block:: bash
 
+    git clone -b stable https://github.com/Ai33L/pyTRACK.git
+    cd pyTRACK
     pip install -e .
 
 The latest tested version of the code is contained in the 'stable' branch, while the 'main' branch
