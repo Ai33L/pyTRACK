@@ -15,6 +15,7 @@ See the sections indexed below for intructions on package installation and usage
 
     installation
     functions
+    contrib
 
 
 .. [1] Hodges, K.I.: A General Method for Tracking Analysis and Its Application to Meteorological Data. Monthly Weather Review 122(11), 2573–2586 (1994) https://doi.org/10.1175/1520-0493(1994)122%3C2573:AGMFTA%3E2.0.CO;2 . Chap.Monthly Weather Review

@@ -127,6 +127,7 @@ def track_uv(infile,
     
     # check if ncatted exists
     if shutil.which("ncatted") is None:
+        print("If on a conda env, conda install conda-forge::pynco to resolve this")
         raise RuntimeError("Error: 'ncatted' command not found. Please install NCO before running this script.")
 
     os.system("ncatted -a _FillValue,,d,, -a missing_value,,d,, " + infile_egf)

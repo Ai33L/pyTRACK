@@ -7,7 +7,7 @@ The stats_track function computes the track statistics from track_uv() output. T
 directory and writes two files - stats_ff_trs_pos.nc and stats_ff_trs_neg.nc, associated the statistics of the positive and negative
 vorticity anomalies.
 
-There files have the following fields-
+These files have the following fields-
 
 1. mstr - mean intensity (/s)
 2. stdstr - std of intensity (/s)

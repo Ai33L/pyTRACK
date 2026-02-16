@@ -1,16 +1,18 @@
 Installation
 ============
 
-To install pyTRACK, run the following (requires Python>=3.9, it's best to use a conda environment)
+If you're on a Linux-based system, run the following to install pyTRACK (Best to use a conda environment with Python>=3.9)
 
 .. code-block:: bash
 
     pip install track-pylib
 
-Alternatively, you can also clone this repository and install pyTRACK from it's base folder with
+If that doesn't work, git clone the stable branch of this repository and pip install from the base directory.
 
 .. code-block:: bash
 
+    git clone -b stable https://github.com/Ai33L/pyTRACK.git
+    cd pyTRACK
     pip install -e .
 
 The latest tested version of the code is contained in the 'stable' branch, while the 'main' branch
@@ -29,11 +31,10 @@ with the only difference being the input and output directories are set to be th
 directory, instead of the usual TRACK-relative paths.
 
 Running track() should work without any additional packages. However, some other pyTRACK functionalities 
-depend on having cdo and nco installed on the system. You will be prompted to install these as and when 
-you need them. For the cdo functionality specifically, it's best to work on a conda environment and run
+depend on having cdo and nco installed on the system. You will be prompted to install these if you don't 
+have them already. The easiest way to do this is work on a conda environment and run
 
 .. code-block:: bash
 
     conda install conda-forge::python-cdo
-
-when prompted.
+    conda install conda-forge::pynco
