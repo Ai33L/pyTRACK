@@ -45,7 +45,7 @@ def track_uv(infile,
     """
     Workflow to track features on 850hPa u-v wind data. Tracks both cyclones and anticyclones.
     
-    First computes vortiticy from the input data and then truncates and spectrally filters out small wavenumbers.
+    First computes vorticity from the input data and then truncates and spectrally filters out small wavenumbers.
 
     Tracks features on this data. Outputs to outdirectory in folders of {hemisphere}_y{year}.
 
