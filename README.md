@@ -27,11 +27,12 @@ track()
 
 This should start the TRACK namelist and should behave exactly like if you ran bin/track.linux from the compiled TRACK folder. The input and output files are assumed to be at the current working directory.
 
-Running track() should work without any additional packages. However, some other pyTRACK functionalities depend on having cdo and nco installed on the system. You will be prompted to install these as and when you need them. For the cdo functionality specifically, it's best to work on a conda environment and run
+Running track() should work without any additional packages. However, some other pyTRACK functionalities depend on having cdo and nco installed on the system. You will be prompted to install these if you don't 
+have them already. The easiest way to do this is work on a conda environment and run
 ```
 conda install conda-forge::python-cdo
+conda install conda-forge::pynco
 ```
-when prompted.
 
 pyTRACK also supports some pre-set workflows, and is under active development. To see a list of workflows currently available, and for a more extensive documentation, check out [here.](https://track-pylib.readthedocs.io/en/latest/)
 

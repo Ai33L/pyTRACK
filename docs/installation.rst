@@ -31,11 +31,10 @@ with the only difference being the input and output directories are set to be th
 directory, instead of the usual TRACK-relative paths.
 
 Running track() should work without any additional packages. However, some other pyTRACK functionalities 
-depend on having cdo and nco installed on the system. You will be prompted to install these as and when 
-you need them. For the cdo functionality specifically, it's best to work on a conda environment and run
+depend on having cdo and nco installed on the system. You will be prompted to install these if you don't 
+have them already. The easiest way to do this is work on a conda environment and run
 
 .. code-block:: bash
 
     conda install conda-forge::python-cdo
-
-when prompted.
+    conda install conda-forge::pynco
