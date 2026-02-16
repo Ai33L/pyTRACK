@@ -18,7 +18,7 @@ pip install -e .
 
 The 'stable' branch contains the latest tested code, and the 'main' branch is used actively for development.
 
-Then from a Python terminal anywhhere, run
+Then from a Python terminal anywhere, run
 
 ```
 from pyTRACK import *
