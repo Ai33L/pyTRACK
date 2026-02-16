@@ -5,4 +5,4 @@ Credits
 
 * Helen Situ - Creator of `pyTRACK-CMIP6 <https://github.com/acse-hvs119/pyTRACK-CMIP6>`_, from where most of the front-end of pyTRACK has been sourced. 
 
-* Giuseppe Zappa - Contributed to `pyTRACK-CMIP6 <https://github.com/acse-hvs119/pyTRACK-CMIP6>`_, some of which have been inherited by pyTRACK.
+* Giuseppe Zappa - Contributed to `pyTRACK-CMIP6 <https://github.com/zappag/pyTRACK-CMIP6>`_, some of which have been inherited by pyTRACK.
