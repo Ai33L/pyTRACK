@@ -44,6 +44,7 @@ def track_uv(infile,
              keep_all_files: bool = False,):
     """
     Workflow to track features on 850hPa u-v wind data. Tracks both cyclones and anticyclones.
+    The input file should contain 6-hourly data, and should have dimensions {time, lat, lon} (no height dimension!)
     
     First computes vorticity from the input data and then truncates and spectrally filters out small wavenumbers.
 
