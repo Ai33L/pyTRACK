@@ -17,7 +17,7 @@ demonstrates how you can meet most of these.
 
 .. note::
 
-   The sdate argument should be passed with care if you decide to split years. IF ysplit is true, then sdate relies on first 
+   The sdate argument should be passed with care if you decide to split years. If ysplit is true, then sdate relies on first 
    date_time being the same every year. Hence, it's a useful feature if you want to track JJA cyclones across years - input data 
    for JJA and pass ysplit=True and sdate='060100'. To track DJF (Or any other time period that is cross-year), input data 
    shifted such that seasons are in the same year and pass ysplit=True and sdate='110100'. This also assumes a Gregorian calendar, 
