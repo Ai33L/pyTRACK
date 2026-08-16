@@ -201,6 +201,7 @@ def track_uv(infile,
         if sdate is not None:
             print('sdate passed - rewriting .nc files with Gregorian dates')
             os.chdir('output_track/'+ext)
+            YY=Y
             if len(Y)<4:
                 YY=str(2000+int(Y))
                 print('Year needs to be later than 1979 - shifting year to', YY)
